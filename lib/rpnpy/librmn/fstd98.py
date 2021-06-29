@@ -159,9 +159,9 @@ def dtype_numpy2fst(npdtype, compress=True, missing=False):
        rpnpy.librmn.const
        FSTDError
     """
-    if not (type(npdtype) == _np.dtype or type(npdtype) == type):
-        raise TypeError("dtype_numpy2fst: Expecting arg of type {0}, Got {1}"\
-                        .format('numpy.dtype', type(npdtype)))
+    ## if not (type(npdtype) == _np.dtype or type(npdtype) == type):
+    ##     raise TypeError("dtype_numpy2fst: Expecting arg of type {0}, Got {1}"\
+    ##                     .format('numpy.dtype', type(npdtype)))
     datyp = 0 #default returned type: binary
     for (i, dtype) in _rc.FST_DATYP2NUMPY_LIST_ITEMS:
         if dtype == npdtype:

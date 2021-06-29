@@ -599,6 +599,9 @@ class rpnpyTutorial(unittest.TestCase):
         """
         Write RPN Standard file with multi-part Yin-Yang grid with analytic data.
         """
+        import numpy as np
+        import rpnpy.librmn.all as rmn
+
         n_j = 8
         fileName = 'yin_yang.fst'
 
