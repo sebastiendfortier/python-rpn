@@ -66,6 +66,8 @@ VGD_HYBMD_KIND  = 5  # Hybrid staggered, first level is a momentum level,
 VGD_HYBMD_VER  = 5
 VGD_HYBPS_KIND = 5   # Hybrid staggered CP grid pressure SLEVE levels
 VGD_HYBPS_VER  = 100 #
+VGD_HYBO_KIND  = 5   # Hybrid unstaggered coordinate of unknown/other origin (like ECMWF)
+VGD_HYBO_VER   = 999 #
 VGD_HYBH_KIND  = 21  # Hydrid staggered CP grid height levels
 VGD_HYBH_VER   = 1   #
 VGD_HYBHS_KIND = 21  # Hydrid staggered CP grid height SLEVE level
@@ -98,6 +100,7 @@ VGD_KIND_VER = {
     'hybm'   : (VGD_HYBM_KIND, VGD_HYBM_VER),    #5,4
     'hybmd'  : (VGD_HYBMD_KIND, VGD_HYBMD_VER),  #5,5
     'hybps'  : (VGD_HYBPS_KIND, VGD_HYBPS_VER),  #5,100
+    'hybo'   : (VGD_HYBO_KIND, VGD_HYBO_VER),    #5,999
     'hybh'   : (VGD_HYBH_KIND, VGD_HYBH_VER),    #21,1
     'hybhs'  : (VGD_HYBHS_KIND, VGD_HYBHS_VER),  #21,1
     'hybhl'  : (VGD_HYBHL_KIND, VGD_HYBHL_VER),  #21,2
