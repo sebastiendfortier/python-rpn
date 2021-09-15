@@ -467,7 +467,7 @@ def vgd_new_hybps(hyb, rcoef1, rcoef2, rcoef3, rcoef4, pref, dhm, dht,
     >>> pref   = 100000.
     >>> dhm    = 10.
     >>> dht    = 2.
-    >>> hyb_float = 0.051
+    >>> hyb_flat = 0.051
     >>> try:
     ...     myvgd = vgd.vgd_new_hybps(lvls, rcoef1, rcoef2, rcoef2, rcoef4,
     ...                               pref, dhm, dht, hyb_flat=hyb_flat)
@@ -1209,6 +1209,55 @@ def vgd_put_opt(key, value):
     return
 
 
+def vgd_is_press_kind(vgd_ptr_or_kind):
+    """
+    Check if a vcoor is of Pressure type
+
+    Args:
+        vgd_ptr_or_kind: one of the following
+            (VGridDescriptor ref) Reference/Pointer to the VGridDescriptor
+            (int) vgd kind number
+    Returns:
+        True if the provided vgd_pointer is valid and is a pressure vcoor.
+    Raises:
+        TypeError
+        ValueError
+        VGDError
+
+    Examples:
+    >>> import sys
+    >>> import rpnpy.vgd.all as vgd
+    >>> lvls = (500.,850.,1000.)
+    >>> try:
+    ...     myvgd = vgd.vgd_new_pres(lvls)
+    ... except:
+    ...     sys.stderr.write("There was a problem creating the VGridDescriptor")
+    ...     sys.exit(1)
+    >>> isPress = vgd.vgd_is_press_kind(myvgd)
+    >>> print("{}".format(isPress))
+    True
+    >>> try:
+    ...     vkind = vgd.vgd_get(myvgd, 'KIND')
+    ... except:
+    ...     sys.stderr.write("There was a problem getting vgd parameter value")
+    >>> isPress = vgd.vgd_is_press_kind(vkind)
+    >>> print("{}".format(isPress))
+    True
+
+    See Also:
+        rpnpy.vgd.const.VGD_KEYS
+        rpnpy.vgd.const.VGD_OPR_KEYS
+        vgd_get
+    """
+    if isinstance(vgd_ptr_or_kind, _integer_types):
+        vkind = vgd_ptr_or_kind
+        if vkind not in _vc.VGD_KIND_LIST:
+            raise ValueError("Provided vkind value out of range: {}".format(vkind))
+    else:
+        vkind = vgd_get(vgd_ptr_or_kind, 'KIND')
+    return vkind not in _vc.VGD_NOT_PRESS_KIND
+
+
 def vgd_get(vgd_ptr, key, quiet=1, defaultOnFail=False, defaultValue=None):
     """
     Get a vgd object parameter value
@@ -1270,6 +1319,7 @@ def vgd_get(vgd_ptr, key, quiet=1, defaultOnFail=False, defaultValue=None):
         vgd_put
         vgd_get_opt
         vgd_put_opt
+        vgd_is_press_kind
     """
     v1 = None
     key2 = key.upper()[0:4]

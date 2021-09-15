@@ -110,6 +110,11 @@ VGD_KIND_VER_INV_VCODE = dict([("{0:03d}{1:1d}".format(v[0]*100, v[1]), k)
                                 for k, v in VGD_KIND_VER.items()])
 VGD_KIND_VER_INV = dict([(v, k) for k, v in VGD_KIND_VER.items()])
 
+VGD_KIND_LIST = list([v[0] for k, v in VGD_KIND_VER.items()])
+VGD_NOT_PRESS_KIND = [
+    VGD_HYBH_KIND, VGD_HYBHS_KIND, VGD_HYBHL_KIND, VGD_HYBHLS_KIND
+    ]
+
 VGD_OPR_KEYS = {
     'get_char'      : ["ETIK", "NAME", "RFLD", "RFLS"],
     'put_char'      : ["ETIK"],
