@@ -23,7 +23,7 @@ epilog0 = r"""Example:
            "+v"           'action=count, dest=v2' '2'     '[description_v2]' \
            "--keep,-k"    'action=store_true'     'false' '[description_k]' \
            "--num,-n"     'type=int'              '2'     '[description_num]' \
-           ++++ $*)
+           ++++ "$@")
     echo positional="$*"
     echo opt1="$opt1"
     echo opt2="$opt2"
@@ -155,7 +155,6 @@ def parse_arg_desc0(n, o, d, h):
     if 'default' not in od.keys():
         od['default'] = d
 
-
     # Options special cases
     if 'required' in od.keys():
         od['required'] = True if od['required'].lower()[0] == 't' else False
@@ -209,6 +208,7 @@ def parse_args(parser, options, delimiter):
     ## sys.argv = ['-'+a if (len(a) > 2 and a[0] == '-' and a[1] != '-') else a for a in sys.argv]
 
     ## Parse provided args
+    ## sys.stderr.write("1{}\n".format(sys.argv))
     try:
         (args, unknown) = parser.parse_known_args()
     ## except argparse.ArgumentError as exc:
@@ -219,6 +219,9 @@ def parse_args(parser, options, delimiter):
             sys.stderr.write("\n"+" ".join(exc.args)+"\n")
         sys.stdout.write("exit 1;")
         sys.exit(1)
+    ## sys.stderr.write("2{}\n".format(sys.argv))
+    ## sys.stderr.write("3{}\n".format(args))
+    ## sys.stderr.write("4{}\n".format(unknown))
 
     # Special case for -h
     if args.help:
@@ -238,6 +241,7 @@ def parse_args(parser, options, delimiter):
     sys.stdout.write("CCLARGS_KEYS='"+
                      " ".join(options)
                      +"'; ")
+    
     for nn in options:
         v = getattr(args,nn)
         if isinstance(v, (list, tuple)):
@@ -245,12 +249,20 @@ def parse_args(parser, options, delimiter):
         v = ' ' if v is None else v
         if nn == 'positional':
             #TODO: check if "set -- $*" should be there instead of "set ..."
-            sys.stdout.write("set nil ; shift ;  set -- $* " + v +" ; ")
+            ## sys.stderr.write("set nil ; shift ;  set -- $* " + repr(v) +" ; \n")
+            sys.stdout.write("set nil ; shift ;  set -- $* " + repr(v) +" ; ")
         else:
-            sys.stdout.write(str(nn)+"="+str(v)+";")
+            ## sys.stderr.write(str(nn)+"="+repr(v)+";\n")
+            #sys.stdout.write(str(nn)+"="+repr(v)+";")
+            sys.stdout.write(str(nn)+"="+repr(v)+";")
 
 
 if __name__ == "__main__":
+    ## sys.stderr.write("0{}\n".format(sys.argv))
     parser, options, delimiter = parse_arg_desc()
+    ## sys.stderr.write("${}\n".format(sys.argv))
+    ## sys.stderr.write("{}\n".format(parser))
+    ## sys.stderr.write("{}\n".format(options))
+    ## sys.stderr.write("{}\n".format(delimiter))
     parse_args(parser, options, delimiter)
 

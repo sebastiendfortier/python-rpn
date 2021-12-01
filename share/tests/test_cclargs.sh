@@ -39,7 +39,7 @@ cat > ${bin2cclargparse} <<EOF
            "+v"           'action=count, dest=v2' '2'     '[description_v2]' \
            "--keep,-k"    'action=store_true'     'false' '[description_k]' \
            "--num,-n"     'type=int'              '2'     '[description_num]' \
-           ++++ \$*)
+           ++++ "\$@")
     echo positional="\$*"
     echo opt1="\$opt1"
     echo opt2="\$opt2"
@@ -158,6 +158,12 @@ my_assert_equal "$(cat ${tmpoutfile1} | tr '\n' ';')" \
                 "positional=;opt1=opt1val1 opt1val2;opt2=-val1;" \
                 "cclargs - opt1 vals"
 
+${bin1cclargs} -opt1 'opt1val1 opt1val2' > ${tmpoutfile1} 2>&1
+my_assert_equal "$?" "0" "cclargs status - opt1 vals b"
+my_assert_equal "$(cat ${tmpoutfile1} | tr '\n' ';')" \
+                "positional=;opt1=opt1val1 opt1val2;opt2=-val1;" \
+                "cclargs - opt1 vals"
+
 ${bin1cclargs} a b -opt1 opt1val1 > ${tmpoutfile1} 2>&1
 my_assert_equal "$?" "0" "cclargs status - opt1 val + positional"
 my_assert_equal "$(cat ${tmpoutfile1} | tr '\n' ';')" \
@@ -171,6 +177,7 @@ my_assert_equal "$(cat ${tmpoutfile1} | tr '\n' ';')" \
                 "cclargs - positional"
 
 
+
 ${bin2cclargparse} p1 p2 --opt1 opt1val -v -v -k --num=3> ${tmpoutfile1} 2>&1
 my_assert_equal "$?" "0" "cclargparse status - opt1 val"
 my_assert_equal "$(cat ${tmpoutfile1} | tr '\n' ';')" \
@@ -182,5 +189,23 @@ my_assert_equal "$?" "0" "cclargparse status - opt2 vals"
 my_assert_equal "$(cat ${tmpoutfile1} | tr '\n' ';')" \
                 "positional=p1:p2;opt1=opt1val;opt2=optval1:optval2;verbose=0;v2=0;keep=False;num=2;" \
                 "cclargparse - opt2 vals"
+
+${bin2cclargparse} p1 p2 --opt1 opt1val --opt2=--toto > ${tmpoutfile1} 2>&1
+my_assert_equal "$?" "0" "cclargparse status - opt2 --toto"
+my_assert_equal "$(cat ${tmpoutfile1} | tr '\n' ';')" \
+                "positional=p1:p2;opt1=opt1val;opt2=--toto;verbose=0;v2=0;keep=False;num=2;" \
+                "cclargparse - opt2 vals b"
+
+${bin2cclargparse} p1 p2 --opt1 opt1val --opt2='--toto --tata' > ${tmpoutfile1} 2>&1
+my_assert_equal "$?" "0" "cclargparse status - opt2 --toto"
+my_assert_equal "$(cat ${tmpoutfile1} | tr '\n' ';')" \
+                "positional=p1:p2;opt1=opt1val;opt2=--toto --tata;verbose=0;v2=0;keep=False;num=2;" \
+                "cclargparse - opt2 vals c"
+
+${bin2cclargparse} p1 p2 --opt1 opt1val --opt2 "--toto --tata" > ${tmpoutfile1} 2>&1
+my_assert_equal "$?" "0" "cclargparse status - opt2 --toto"
+my_assert_equal "$(cat ${tmpoutfile1} | tr '\n' ';')" \
+                "positional=p1:p2;opt1=opt1val;opt2=--toto --tata;verbose=0;v2=0;keep=False;num=2;" \
+                "cclargparse - opt2 vals d"
 
 rm -f ${bin1cclargs} ${bin2cclargparse} ${tmpoutfile1} ${tmpoutfile2}
