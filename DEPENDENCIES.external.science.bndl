@@ -2,4 +2,6 @@
 ubuntu-18.04-skylake-64:eccc/cmd/cmda/libs/19.6.0/intel-19.0.3.199
 sles-15-skylake-64-xc50:eccc/cmd/cmda/libs/19.6.0/PrgEnv-intel-6.0.5-19.0.5.281
 
+rhel-8-icelake-64:eccc/cmd/cmda/libs/19.7.1/inteloneapi-2021.4.0
+
 eccc/cmo/cmoi/base/20200123
