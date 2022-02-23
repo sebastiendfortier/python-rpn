@@ -720,8 +720,8 @@ def ezgetlalo(nij, grtyp, refparam, xyAxis, hasAxis, ij0, doCorners):
     for icorner in range(4):
         di = dij_corners[icorner][0]
         dj = dij_corners[icorner][1]
-        ## xnew = x.copy('FORTRAN') + dij_corners[icorner][0]
-        ## ynew = y.copy('FORTRAN') + dij_corners[icorner][1]
+        ## xnew = x.copy('F') + dij_corners[icorner][0]
+        ## ynew = y.copy('F') + dij_corners[icorner][1]
         ## xc4[icorner, :, :] = fx(xnew, ynew)
         ## yc4[icorner, :, :] = fy(xnew, ynew)
         xc4[icorner, :, :] = xc1[:, :] + dij_corners[icorner][0]

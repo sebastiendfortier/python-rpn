@@ -187,8 +187,8 @@ class RPNGridTests(unittest.TestCase):
     def gridZL(self,dlalo=0.5,nij=10):
         """provide grid and rec values for other tests"""
         (g1,la1,lo1) = self.gridL(dlalo,nij)
-        x_axis_d = lo1[:,0].reshape((lo1.shape[0],1)).copy('FORTRAN')
-        y_axis_d = la1[0,:].reshape((1,la1.shape[1])).copy('FORTRAN')
+        x_axis_d = lo1[:,0].reshape((lo1.shape[0],1)).copy('F')
+        y_axis_d = la1[0,:].reshape((1,la1.shape[1])).copy('F')
         grtyp='L'
         la0 = 0.
         lo0 = 180.
@@ -203,8 +203,8 @@ class RPNGridTests(unittest.TestCase):
     def gridDiezeL(self,dlalo=0.5,nij=10):
         """provide grid and rec values for other tests"""
         (g1,la1,lo1) = self.gridL(dlalo,nij)
-        x_axis_d = lo1[:,0].reshape((lo1.shape[0],1)).copy('FORTRAN')
-        y_axis_d = la1[0,:].reshape((1,la1.shape[1])).copy('FORTRAN')
+        x_axis_d = lo1[:,0].reshape((lo1.shape[0],1)).copy('F')
+        y_axis_d = la1[0,:].reshape((1,la1.shape[1])).copy('F')
         grtyp='L'
         la0 = 0.
         lo0 = 180.
@@ -215,8 +215,8 @@ class RPNGridTests(unittest.TestCase):
         x_axis = rpnstd.RPNRec(x_axis_d,rpnstd.RPNMeta())
         y_axis = rpnstd.RPNRec(y_axis_d,rpnstd.RPNMeta())
         grid = rpnstd.RPNGrid(grtyp='#',ig14=ip134,shape=(nij-1,nij-1),g_ref=g1,xyaxis=(x_axis,y_axis))
-        la2 = la1[ij0[0]-1:,ij0[1]-1:].copy('FORTRAN')
-        lo2 = lo1[ij0[0]-1:,ij0[1]-1:].copy('FORTRAN')
+        la2 = la1[ij0[0]-1:,ij0[1]-1:].copy('F')
+        lo2 = lo1[ij0[0]-1:,ij0[1]-1:].copy('F')
         return (grid,la2,lo2)
 
     def test_RPNGrid_Error(self):

@@ -114,7 +114,7 @@ def get_data_profile(fileId, xy, ll,
 
     # Read rfld and extract relevent points
     MB2PA = 100.
-    rfldName = vgd.vgd_get(vGrid, 'RFLD')
+    rfldName = vgd.vgd_get(vGrid, 'RFLD', defaultOnFail=True, defaultValue='')
     shape = (len(xy)+len(ll),)
     rfld  = np.empty(shape, dtype=np.float32, order='F')
     rfld[:] = 1000. * MB2PA

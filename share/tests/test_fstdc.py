@@ -196,8 +196,8 @@ class Fstdc_ezgetlaloKnownValues(unittest.TestCase):
         grtyp='Z'
         grref='L'
         (ig1,ig2,ig3,ig4) =  Fstdc.cxgaig(grref,0.,0.,1.,1.)
-        xaxis = self.lo[:,0].reshape((self.lo.shape[0],1)).copy('FORTRAN')
-        yaxis = self.la[0,:].reshape((1,self.la.shape[1])).copy('FORTRAN')
+        xaxis = self.lo[:,0].reshape((self.lo.shape[0],1)).copy('F')
+        yaxis = self.la[0,:].reshape((1,self.la.shape[1])).copy('F')
         hasAxes = 1
         doCorners = 0
         (i0,j0) = (0,0)
@@ -217,8 +217,8 @@ class Fstdc_ezgetlaloKnownValues(unittest.TestCase):
         grtyp='#'
         grref='L'
         (ig1,ig2,ig3,ig4) =  Fstdc.cxgaig(grref,0.,0.,1.,1.)
-        xaxis = self.lo[:,0].reshape((self.lo.shape[0],1)).copy('FORTRAN')
-        yaxis = self.la[0,:].reshape((1,self.la.shape[1])).copy('FORTRAN')
+        xaxis = self.lo[:,0].reshape((self.lo.shape[0],1)).copy('F')
+        yaxis = self.la[0,:].reshape((1,self.la.shape[1])).copy('F')
         hasAxes = 1
         doCorners = 0
         (i0,j0) = (2,2)

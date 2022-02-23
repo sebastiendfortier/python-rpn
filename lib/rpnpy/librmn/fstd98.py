@@ -159,9 +159,9 @@ def dtype_numpy2fst(npdtype, compress=True, missing=False):
        rpnpy.librmn.const
        FSTDError
     """
-    if not (type(npdtype) == _np.dtype or type(npdtype) == type):
-        raise TypeError("dtype_numpy2fst: Expecting arg of type {0}, Got {1}"\
-                        .format('numpy.dtype', type(npdtype)))
+    ## if not (type(npdtype) == _np.dtype or type(npdtype) == type):
+    ##     raise TypeError("dtype_numpy2fst: Expecting arg of type {0}, Got {1}"\
+    ##                     .format('numpy.dtype', type(npdtype)))
     datyp = 0 #default returned type: binary
     for (i, dtype) in _rc.FST_DATYP2NUMPY_LIST_ITEMS:
         if dtype == npdtype:
@@ -483,7 +483,7 @@ def fstecr(iunit, data, meta=None, rewrite=True):
 
     Args:
         iunit : file unit number (int)
-        data  : data to be written (numpy.ndarray, FORTRAN order)
+        data  : data to be written (numpy.ndarray, F order)
         meta  : associated metadata (dict)
                 Not specified meta params will be set to their default value
                 as in FST_RDE_META_DEFAULT
@@ -546,7 +546,7 @@ def fstecr(iunit, data, meta=None, rewrite=True):
                         .format('numpy.ndarray', 'dict', type(data), type(meta)))
     if not data.flags['F_CONTIGUOUS']:
         raise TypeError("fstecr: Expecting data type " +
-                        "numpy.ndarray with FORTRAN order")
+                        "numpy.ndarray with F order")
     #TODO: check if file is open with write permission
     meta2 = _rc.FST_RDE_META_DEFAULT.copy()
     for k in _rc.FST_RDE_META_DEFAULT.keys():
@@ -1440,7 +1440,7 @@ def fstluk(key, dtype=None, rank=None, dataArray=None):
         dataArray (ndarray): (optional) allocated array where to put the data
     Returns:
         {
-            'd'   : data,       # record data as a numpy.ndarray, FORTRAN order
+            'd'   : data,       # record data as a numpy.ndarray, F order
             ...                 # same params list as fstprm
         }
     Raises:

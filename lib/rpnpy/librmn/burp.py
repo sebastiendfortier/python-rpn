@@ -1804,7 +1804,7 @@ def mrbcvt_dict_find_id(desc, nmax=999, flags=_re.IGNORECASE):
 
     Examples:
     >>> import rpnpy.librmn.all as rmn
-    >>> bufridlist = rmn.mrbcvt_dict_find_id('.*ground\s+temperature.*')
+    >>> bufridlist = rmn.mrbcvt_dict_find_id('.*temperature.*')
 
     Notes:
         This is a new function in version 2.1.b2

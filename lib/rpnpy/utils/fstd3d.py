@@ -1030,7 +1030,7 @@ def fst_new_3d(params, hgrid, vgrid,
                         .format('numpy.ndarray', type(dataArray)))
     elif not dataArray.flags['F_CONTIGUOUS']:
         raise TypeError("fst_new_3d: Expecting dataArray type " +
-                        "numpy.ndarray with FORTRAN order")
+                        "numpy.ndarray with F order")
     if dtype is not None and dataArray.dtype != dtype:
         raise TypeError("fst_new_3d: Inconsistency in provided dtype and dataArray")
     if dataArray.shape != (ni,nj,nk):
