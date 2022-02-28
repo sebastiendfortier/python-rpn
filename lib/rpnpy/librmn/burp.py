@@ -1736,6 +1736,10 @@ def _mrbcvt_dict_full_init():
         AFSISIO = os.getenv('AFSISIO', '')
         mypath = os.path.join(AFSISIO.strip(), 'datafiles/constants',
                               _rbc.BURP_TABLE_B_FILENAME)
+        if not (os.path.isfile(mypath)):
+            mypath = os.path.join(AFSISIO.strip(),
+                                  'datafiles/constants/bufr_table_versions',
+                                  _rbc.BURP_TABLE_B_FILENAME)
         if not (AFSISIO and os.path.isfile(mypath)):
             AFSISIO2 = os.getenv('rpnpy', '/')
             mypath = os.path.join(AFSISIO2.strip(), 'share',
