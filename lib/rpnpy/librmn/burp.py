@@ -2525,7 +2525,7 @@ def mrbini(funit, rpt, time=None, flgs=None, stnid=None, idtyp=None, ilat=None,
 
     istat = _rp.c_mrbini(funit, rpt, time, flgs, _C_WCHAR2CHAR(stnid),
                          idtyp, ilat, ilon, idx, idy, ielev, drnd, date, oars,
-                         runn, sup, nsup,xaux, nxaux)
+                         runn, sup, nsup, xaux, nxaux)
     if istat != 0:
         raise BurpError('c_mrbini', istat)
     return rpt

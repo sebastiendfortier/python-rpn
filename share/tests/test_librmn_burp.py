@@ -693,6 +693,33 @@ class RpnPyLibrmnBurp(unittest.TestCase):
     def testmrbcvtdictget(self):
         cvt = rmn.mrbcvt_dict_get()
 
+    def testmrbini(self):
+        output_filename="test.burp"
+        funit = rmn.burp_open(output_filename, rmn.BURP_MODE_CREATE)
+        
+        params = {}
+        params["rpt"]=100000
+        params["date"]=20220225
+        params["time"]=1212
+        params["stnid"]="^AMSR2"
+        params["ilat"]=1111
+        params["ilon"]=2222
+        params["ielev"]=3333
+        params["idtyp"]=1
+        params["idx"]=0
+        params["idy"]=0
+        params["flgs"]=1024
+        params["runn"]=0
+        params["oars"]=0
+        params["drnd"]=0
+        params["sup"]=None
+        params["nsup"]=0
+        params["xaux"]=None
+        params["nxaux"]=0
+        rpt = rmn.mrbini(funit, params)
+        
+        rmn.burp_close(funit)
+        os.unlink(output_filename)
 
     ## def testmrbxtrcvtKnownValues(self):
     ##     """fnomfclos should give known result with known input"""
