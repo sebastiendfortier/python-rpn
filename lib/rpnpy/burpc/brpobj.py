@@ -740,6 +740,10 @@ class BurpcRpt(_BurpcObjBase):
             if self.nsize > 0 and self.nblk0 > 0:
                 _bp.c_brp_updrpthdr(iunit, self.__ptr)
             else:
+                # Give a minimal size to the block
+                nbits = 32
+                nsize = int(_rmn.LRPT(_rmn.LBLK(0,0,0,nbits)))
+                _bp.c_brp_allocrpt(self.__ptr, nsize)
                 _bp.c_brp_putrpthdr(iunit, self.__ptr)
             return
         blksize0 = 0
@@ -752,10 +756,13 @@ class BurpcRpt(_BurpcObjBase):
         else:
             blksize2 = self.__ptr[0].nsize + blksize
             _bp.c_brp_resizerpt(self.__ptr, blksize2)
-        ## print self.nsize,self.nblk0
         if self.nsize > 0 and self.nblk0 > 0:
             _bp.c_brp_updrpthdr(iunit, self.__ptr)
         else:
+            # Give a minimal size to the block
+            nbits = 32
+            nsize = int(_rmn.LRPT(_rmn.LBLK(0,0,0,nbits)))
+            _bp.c_brp_allocrpt(self.__ptr, nsize)
             _bp.c_brp_putrpthdr(iunit, self.__ptr)
         for blk in self.__dblk:
             if _bp.c_brp_putblk(self.__ptr, blk.getptr()) < 0:
