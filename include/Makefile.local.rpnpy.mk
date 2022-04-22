@@ -70,14 +70,18 @@ endif
 ##
 .PHONY: rpnpy_vfiles rpnpy_version.inc rpnpy_version.h rpnpy_version.py
 #RPNPY_VFILES = rpnpy_version.inc rpnpy_version.h rpnpy_version.py
-RPNPY_VFILES = $(rpnpy)/lib/rpnpy/version.py
+#RPNPY_VFILES = $(rpnpy)/lib/rpnpy/version.py
+RPNPY_VFILES = rpnpy_version.py
 rpnpy_vfiles: $(RPNPY_VFILES)
 rpnpy_version.inc:
 	.rdemkversionfile "rpnpy" "$(RPNPY_VERSION)" $(rpnpy)/include f
 rpnpy_version.h:
 	.rdemkversionfile "rpnpy" "$(RPNPY_VERSION)" $(rpnpy)/include c
 LASTUPDATE = $(shell date '+%Y-%m-%d %H:%M %Z')
-rpnpy_version.py: $(rpnpy)/lib/rpnpy/version.py
+rpnpy_version.py: | rpnpy_version_rm $(rpnpy)/lib/rpnpy/version.py
+	touch rpnpy_version.py
+rpnpy_version_rm:
+	rm -f $(rpnpy)/lib/rpnpy/version.py
 $(rpnpy)/lib/rpnpy/version.py:
 	echo "__VERSION__ = '$(RPNPY_VERSION)'" > $(rpnpy)/lib/rpnpy/version.py
 	echo "__LASTUPDATE__ = '$(LASTUPDATE)'" >> $(rpnpy)/lib/rpnpy/version.py
