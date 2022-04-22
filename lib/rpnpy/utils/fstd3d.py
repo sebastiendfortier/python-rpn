@@ -886,11 +886,13 @@ def fst_write_3d(fileId, rec3d, verbose=False):
         raise ValueError('rec3d["d"] should be of rank 3')
     vgrid_write(fileId, rec3d['vgrid'], writeRfld=True, verbose=verbose)
     _rmn.writeGrid(fileId, rec3d['hgrid'])
+    ip1_0, nk_0 = rec3d['ip1'], rec3d['nk']
     for k, ip1 in enumerate(rec3d['vgrid']['ip1s']):
         rec3d['ip1'] = ip1
+        rec3d['nk'] = 1
         d = rec3d['d'][:,:,k]
         _rmn.fstecr(fileId, d, rec3d, rewrite=True)
-
+    rec3d['ip1'], rec3d['nk'] = ip1_0, nk_0
 
 #TODO: params could include all other args
 def fst_new_3d(params, hgrid, vgrid,
