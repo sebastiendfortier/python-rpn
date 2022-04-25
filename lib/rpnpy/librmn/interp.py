@@ -1000,7 +1000,7 @@ def ezgfstp(gdid, doSubGrid=False):
     >>> # Get standard file attributes of the positional records
     >>> params = rmn.ezgfstp(meGrid['id'])
     >>> print("# {0} grid axes are in {nomvarx} and {nomvary} records".format(meRec['nomvar'], **params))
-    # ME   grid axes are in >>   and ^^   records
+    # ME grid axes are in >>   and ^^   records
 
     See Also:
         ezgprm
@@ -1177,12 +1177,13 @@ def gdgaxes(gdid, ax=None, ay=None):
     raise EzscintError()
 
 
-def gdll(gdid, lat=None, lon=None):
+def gdll(gdid, lat=None, lon=None, fullgrid=False):
     """
     Gets the latitude/longitude position of grid 'gdid'
 
     gridLatLon = gdll(gdid)
     gridLatLon = gdll(gdid, lat, lon)
+    gridLatLon = gdll(gdid, lat, lon, fullgrid=True)
     gridLatLon = gdll(gdid, gridLatLon)
     gridLatLon = gdll(griddict)
 
@@ -1194,13 +1195,18 @@ def gdll(gdid, lat=None, lon=None):
         griddict   : dict with minimally key 'id' as id of the grid
                      optionnaly keys 'lat' and 'lon' can be provided as
                      2 pre-allocated lat, lon arrays (numpy.ndarray)
+        fullgrid   : for multigrids (nsubgris > 1) return all grids lat-lon in a single array
+                     False: lat.shape = lon.shape = (ni,nj) with values from suggrid 0
+                     True : lat.shape = lon.shape = (ni,nj,nsubgrids) 
     Returns:
         {
             'id'  : grid id, same as input arg
             'lat' : latitude  data (numpy.ndarray)
-                    same as gridLatLon['subgrid'][0]['lat']
+                    same as gridLatLon['subgrid'][0]['lat'] if fullgrid=False
+                    all subgrids latlon (lat.shape=(ni,nj,nsubgrids)) if fullgrid=True
             'lon' : longitude data (numpy.ndarray)
-                    same as gridLatLon['subgrid'][0]['lon']
+                    same as gridLatLon['subgrid'][0]['lon'] if fullgrid=False
+                    all subgrids latlon (lon.shape=(ni,nj,nsubgrids)) if fullgrid=True
             'nsubgrids' : Number of subgrids
             'subgridid' : list of subgrids id
             'subgrid'   : list of subgrids {'id', 'lat', 'lon'}
@@ -1218,6 +1224,11 @@ def gdll(gdid, lat=None, lon=None):
     >>> print("# Lat, Lon of point {0}, {1} is: {2:4.1f}, {3:5.1f}"
     ...       .format(i, j, lalo['lat'][i,j], lalo['lon'][i,j]))
     # Lat, Lon of point 45, 20 is: -7.9, 180.0
+    >>> grid = rmn.defGrid_YY(31, overlap=1.5, xlat1=0., xlon1=180.,
+    ...                       xlat2=0., xlon2=270.)
+    >>> lalo = rmn.gdll(grid['id'], fullgrid=True)
+    >>> print("# lalo['lat'].shape = {}".format(lalo['lat'].shape))
+    # lalo['lat'].shape = (91, 31, 2)
 
     See Also:
         gdxyfll
@@ -1230,7 +1241,10 @@ def gdll(gdid, lat=None, lon=None):
     lat = _getCheckArg(None, lat, lat, 'lat')
     gdid = _getCheckArg(int, gdid, gdid, 'id')
     nsubgrids = ezget_nsubgrids(gdid)
-    if nsubgrids > 1:
+    if nsubgrids > 1 and fullgrid != 2:
+        if (fullgrid):
+            lalofull = gdll(gdid, lat, lon, fullgrid=2)
+            lat, lon = None, None
         latlon = []
         subgridid = ezget_subgridids(gdid)
         for id in subgridid:
@@ -1238,21 +1252,28 @@ def gdll(gdid, lat=None, lon=None):
             lat, lon = None, None
         if not len(latlon):
             raise EzscintError()
+        if fullgrid:
+            lat, lon = lalofull['lat'], lalofull['lon']
+        else:
+            lat, lon = latlon[0]['lat'], latlon[0]['lon']
         return {
                 'id' : gdid,
-                'lat' : latlon[0]['lat'],
-                'lon' : latlon[0]['lon'],
+                'lat' : lat,
+                'lon' : lon,
                 'nsubgrids' : nsubgrids,
                 'subgridid' : subgridid,
                 'subgrid'   : latlon
                 }
     gridParams = ezgxprm(gdid)
-    lat = _ftnOrEmpty(lat, gridParams['shape'], _np.float32)
-    lon = _ftnOrEmpty(lon, gridParams['shape'], _np.float32)
+    nijk = gridParams['shape']
+    if fullgrid == 2:
+        nijk = (gridParams['shape'][0],gridParams['shape'][1],nsubgrids)
+    lat = _ftnOrEmpty(lat, nijk, _np.float32)
+    lon = _ftnOrEmpty(lon, nijk, _np.float32)
     if not (isinstance(lat, _np.ndarray) and isinstance(lon, _np.ndarray)):
         raise TypeError("gdll: Expecting lat, lon as 2 numpy.ndarray," +
                         "Got {0}, {1}".format(type(lat), type(lon)))
-    if lat.shape != gridParams['shape'] or lon.shape != gridParams['shape']:
+    if lat.shape != nijk or lon.shape != nijk:
         raise TypeError("gdll: provided lat, lon have the wrong shape")
     istat = _rp.c_gdll(gdid, lat, lon)
     if istat >= 0:
