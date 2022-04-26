@@ -1385,6 +1385,141 @@ Details:
         Returns:
            None
 
+=== EXTERNAL FUNCTIONS in fstd98/fst_missing.c ===
+
+    c_missing_value_used()
+        get the state of the MissingValue package
+        Proto:
+           int missing_value_used()
+        Args:
+           None
+        Returns:
+           int, 0 if feature is not active, 1 if it is
+
+    c_ForceMissingValueUsage(flag)
+        forcibly set the state of the MissingValue package
+        Proto:
+           int ForceMissingValueUsage(int flag)
+        Args:
+           flag (int) : 
+        Returns:
+           int, previous value, 0 if feature is not active, 1 if it is
+
+    c_get_missing_value_flags(f, i, ui, d, s, us, b, ub)
+        this integer function is used to get the special values used to flag "missing" data for
+        real, integer, unsigned integer, 8 byte real, 2 byte integer, unsigned 2 byte integer
+        this integer function will return 0 if feature is not active, 1 if it is
+        Proto:
+            int get_missing_value_flags(float *f, int *i, unsigned int *ui, double *d,
+                                        short *s, unsigned short *us,
+                                        signed char *b, unsigned char *ub)
+        Args:
+            f  (float)         : missing value for data of type float
+            i  (int)           : missing value for data of type int
+            ui (unsigned int)  : missing value for data of type unsigned int
+            d  (double)        : missing value for data of type double 
+            s  (short)         : missing value for data of type short
+            us (unsigned short): missing value for data of type unsigned short
+            b  (signed char)   : missing value for data of type signed char
+            ub (unsigned char) : missing value for data of type unsigned char
+        Returns:
+           int, 0 if feature is not active, 1 if it is
+
+
+    c_set_missing_value_flags(f, i, ui, d, s, us, b, ub)
+        this subroutine is used to set the special values used to flag "missing" data for
+        real, integer, unsigned integer, 8 byte real, 2 byte integer, unsigned 2 byte integer
+        calling this subroutine will also activate the package
+        Proto:
+            void set_missing_value_flags(float *f, int *i, unsigned int *ui, double *d,
+                                         short *s, unsigned short *us,
+                                         signed char *b, unsigned char *ub)
+       Args:
+            f  (float)         : missing value for data of type float
+            i  (int)           : missing value for data of type int
+            ui (unsigned int)  : missing value for data of type unsigned int
+            d  (double)        : missing value for data of type double 
+            s  (short)         : missing value for data of type short
+            us (unsigned short): missing value for data of type unsigned short
+            b  (signed char)   : missing value for data of type signed char
+            ub (unsigned char) : missing value for data of type unsigned char
+        Returns:
+            None
+
+    c_EncodeMissingValue(field, field2, nvalues, datatype,
+                         nbits, is_byte, is_short, is_double)
+        this function copies data from field2 into field replacing values that have the "missing data" 
+        value with values that are non detrimental to further packing by the "standard file" packers. 
+        field 2 is leftas is, field will contain the output.
+        if proper encoding is not possible, the function returns zero immediately, leaving field untouched.
+        the missing value will be replaced by a value greater than the largest value in field2 and 
+        large enough not to create an after packing collision with the value of the actual largest
+        useful value in field2 (nbits is needed for this calculation)
+        Proto:
+           int EncodeMissingValue(void *field, void *field2, int nvalues, int datatype,
+                                  int nbits, int is_byte, int is_short, int is_double)
+        Args:
+           field  (ndpointer(float32)) : input array 
+           field2 (ndpointer(float32)) : output array
+           nvalues   (int) : number of elements in arrays field and field2
+           datatype  (int) : array data fst typecode 
+           nbits     (int) : number of bits per element to be used for packing (used to compute appropriate flag values)
+           is_byte   (int) : non zero if array element length is one byte
+           is_short  (int) : non zero if integer (signed or not) data element length is two bytes
+           is_double (int) : non zero if real data element length is eight bytes (double / real *8)
+        Returns:
+           int, number of missing values found (0 if unsuccessful for any reason)
+        Note:
+           data type codes
+           0: binary, transparent
+           1: floating point
+           2: unsigned integer
+           3: character (R4A in an integer)
+           4: signed integer
+           5: IEEE floating point
+           6: floating point 
+           7: character string
+           8: complex IEEE
+           +128 = with second stage packer
+           +64  = missing data flagging is used
+
+    c_DecodeMissingValue(field, nvalues, datatype, is_byte, is_short, is_double){
+        this subroutine will replace all occurrences the largest value in array field by the "missing data"
+        value for this kind (datatype) of data. it assumes that EncodeMissingValue / encode_missing_value
+        has been called before to set the largest value in an adequate manner.
+        Proto:
+           void DecodeMissingValue(void *field, int nvalues, int datatype,
+                                   int is_byte, int is_short, int is_double)
+        Args:
+           field (ndpointer(float32)): intput output array
+           nvalues   (int) : number of elements in array field
+           datatype  (int) : array data fst typecode (see c_EncodeMissingValue above)
+           is_byte   (int) : non zero if array element length is one byte
+           is_short  (int) : non zero if integer (signed or not) data element length is two bytes
+           is_double (int) : non zero if real data element length is eight bytes (double / real *8)
+        Returns:
+           None
+
+    c_SetMissingValueMapping(what, datatype, processor_, is_byte, is_short, is_double)
+        set the functions used for encoding missing values and/or decoding encoded fields
+        Proto:
+           void SetMissingValueMapping(int what, int datatype, void *processor,
+                                       int is_byte, int is_short, int is_double)
+        Args:
+           what      (int)  : mode code
+                              1  - replace a decoding routine
+                              2  - replace an encoding routine
+                              11 - deactivate decoder for specified type
+           datatype  (int)  : array data fst typecode (see c_EncodeMissingValue above)
+           processor (void) : address of the processing function called as 
+                              decode_function(void *data, int npoints)
+                              n_missing_points = encode_function(void *dest, void *src, int npoints)
+           is_byte   (int)  : non zero if array element length is one byte
+           is_short  (int)  : non zero if integer (signed or not) data element length is two bytes
+           is_double (int)  : non zero if real data element length is eight bytes (double / real *8)
+        Returns:
+           None
+
 </source>
 ##DETAILS_END
 
@@ -2588,6 +2723,60 @@ c_ez_calcarea2 = librmn.c_ez_calcarea2
 ##    return (status);
 ## }
 
+#---- fstd98/fst_missing.c ------------------------------------------------
+
+## int missing_value_used()  /* return 1 if missing value detected, 0 otherwise */
+librmn.missing_value_used.argtypes = []
+librmn.missing_value_used.restype  = _ct.c_int
+c_missing_value_used = librmn.missing_value_used
+
+## int ForceMissingValueUsage(int flag) 
+librmn.ForceMissingValueUsage.argtypes = (_ct.c_int, )
+librmn.ForceMissingValueUsage.restype  = _ct.c_int
+c_ForceMissingValueUsage = librmn.ForceMissingValueUsage
+
+## int get_missing_value_flags(float *f, int *i, unsigned int *ui, double *d, short *s, 
+##                             unsigned short *us, signed char *b, unsigned char *ub)
+librmn.get_missing_value_flags.argtypes = (_ct.POINTER(_ct.c_float), _ct.POINTER(_ct.c_int),
+                                           _ct.POINTER(_ct.c_uint),  _ct.POINTER(_ct.c_double),
+                                           _ct.POINTER(_ct.c_short), _ct.POINTER(_ct.c_ushort),
+                                           _ct.POINTER(_ct.c_byte),  _ct.POINTER(_ct.c_ubyte))
+librmn.get_missing_value_flags.restype  = _ct.c_int
+c_get_missing_value_flags = librmn.get_missing_value_flags
+
+## void set_missing_value_flags(float *f, int *i, unsigned int *ui, double *d, short *s, 
+##                              unsigned short *us, signed char *b, unsigned char *ub)
+librmn.set_missing_value_flags.argtypes = (_ct.POINTER(_ct.c_float), _ct.POINTER(_ct.c_int),
+                                           _ct.POINTER(_ct.c_uint),  _ct.POINTER(_ct.c_double),
+                                           _ct.POINTER(_ct.c_short), _ct.POINTER(_ct.c_ushort),
+                                           _ct.POINTER(_ct.c_byte),  _ct.POINTER(_ct.c_ubyte))
+# librmn.set_missing_value_flags.restype  = _ct.c_int
+c_set_missing_value_flags = librmn.set_missing_value_flags
+
+## int EncodeMissingValue(void *field,void *field2,int nvalues,int datatype,int nbits,
+##                        int is_byte,int is_short,int is_double)
+# librmn.EncodeMissingValue.argtypes = (_ct.c_void_p, _ct.c_void_p,
+librmn.EncodeMissingValue.argtypes = (_npc.ndpointer(dtype=_np.float32), _npc.ndpointer(dtype=_np.float32),
+                                      _ct.c_int, _ct.c_int, _ct.c_int,
+                                      _ct.c_int, _ct.c_int, _ct.c_int)
+librmn.EncodeMissingValue.restype  = _ct.c_int
+c_EncodeMissingValue = librmn.EncodeMissingValue
+
+## void SetMissingValueMapping(int what, int datatype, void *processor_, int is_byte,
+##                             int is_short, int is_double)
+librmn.SetMissingValueMapping.argtypes = (_ct.c_int, _ct.c_int, _ct.c_void_p,
+                                          _ct.c_int, _ct.c_int, _ct.c_int)
+# librmn.SetMissingValueMapping.restype  = _ct.c_int
+c_SetMissingValueMapping = librmn.SetMissingValueMapping
+
+## void DecodeMissingValue(void *field,int nvalues,int datatype,int is_byte,
+##                         int is_short,int is_double)
+# librmn.DecodeMissingValue.argtypes = (_ct.c_void_p,
+librmn.DecodeMissingValue.argtypes = (_npc.ndpointer(dtype=_np.float32),
+                                      _ct.c_int, _ct.c_int,
+                                      _ct.c_int, _ct.c_int, _ct.c_int)
+# librmn.DecodeMissingValue.restype  = _ct.c_int
+c_DecodeMissingValue = librmn.DecodeMissingValue
 
 # =========================================================================
 
