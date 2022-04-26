@@ -1483,7 +1483,7 @@ Details:
            +128 = with second stage packer
            +64  = missing data flagging is used
 
-    c_DecodeMissingValue(field, nvalues, datatype, is_byte, is_short, is_double){
+    c_DecodeMissingValue(field, nvalues, datatype, is_byte, is_short, is_double)
         this subroutine will replace all occurrences the largest value in array field by the "missing data"
         value for this kind (datatype) of data. it assumes that EncodeMissingValue / encode_missing_value
         has been called before to set the largest value in an adequate manner.

@@ -2776,6 +2776,391 @@ def kindToString(kind):
     return str12
 
 
+#--- fstd98/fst_missing ---------------------------------------------------
+def missing_value_used():
+    """
+    Get the state of the MissingValue package
+    
+    is_used = missing_value_used()
+    
+    Args:
+        None
+    Returns:
+        True if MissingValue package is active, False otherwise
+
+    Examples:
+    >>> import rpnpy.librmn.all as rmn
+    >>> print('# {}'.format(rmn.missing_value_used()))
+    # False
+    
+    See Also:
+        ForceMissingValueUsage
+        get_missing_value_flags
+        set_missing_value_flags
+        EncodeMissingValue
+        DecodeMissingValue
+        SetMissingValueMapping
+    """
+    return (_rp.c_missing_value_used() != 0)
+
+
+def ForceMissingValueUsage(flag):
+    """
+    Forcibly set the state of the MissingValue package
+    
+    was_used = ForceMissingValueUsage(flag)
+    
+    Args:
+        flag : True to force usage of the MissingValue package, False otherwise
+    Returns:
+        True if MissingValue package was previously active, False otherwise
+    
+    Examples:
+    >>> import rpnpy.librmn.all as rmn
+    >>> print('# {}'.format(rmn.ForceMissingValueUsage(True)))
+    # False
+    
+    See Also:
+        missing_value_used
+        get_missing_value_flags
+        set_missing_value_flags
+        EncodeMissingValue
+        DecodeMissingValue
+        SetMissingValueMapping
+    """
+    iflag = 1 if flag else 0
+    return (_rp.c_ForceMissingValueUsage(iflag) != 0)
+
+
+def get_missing_value_flags():
+    """
+    Get the special values used to flag "missing" data for different data types
+    
+    missingValues = get_missing_value_flags()
+    
+    Args:
+        None
+    Returns:
+        dict, missing data values per type
+        {
+            'float'  : ,
+            'int'    : ,
+            'uint'   : ,
+            'double' : ,
+            'short'  : ,
+            'ushort' : ,
+            'byte'   : ,
+            'ubyte'  : 
+        }
+    Raise:
+        FSTDError on errors        
+    
+    Examples:
+    >>> import rpnpy.librmn.all as rmn
+    >>> missingValues = rmn.get_missing_value_flags()
+    >>> for k in sorted(missingValues.keys()):
+    ...    print('# {:8s} : {}'.format(repr(k), missingValues[k]))
+    # 'byte'   : -128
+    # 'double' : -1e+38
+    # 'float'  : -9.999999680285692e+37
+    # 'int'    : -2147483648
+    # 'short'  : -32768
+    # 'ubyte'  : 255
+    # 'uint'   : 4294967295
+    # 'ushort' : 65535
+    
+    See Also:
+        ForceMissingValueUsage
+        missing_value_used
+        set_missing_value_flags
+        EncodeMissingValue
+        DecodeMissingValue
+        SetMissingValueMapping
+    """
+    (f, i, ui, d, s, us, b, ub) = (_ct.c_float(), _ct.c_int(), _ct.c_uint(), _ct.c_double(),
+                                   _ct.c_short(), _ct.c_ushort(), _ct.c_byte(), _ct.c_ubyte())
+    istat = _rp.c_get_missing_value_flags(_ct.byref(f), _ct.byref(i), _ct.byref(ui),
+                                          _ct.byref(d), _ct.byref(s), _ct.byref(us),
+                                          _ct.byref(b), _ct.byref(ub))
+    return {
+            'float'  : f.value,
+            'int'    : i.value,
+            'uint'   : ui.value,
+            'double' : d.value,
+            'short'  : s.value,
+            'ushort' : us.value,
+            'byte'   : b.value,
+            'ubyte'  : ub.value
+        }
+
+
+def set_missing_value_flags(missingValues, vtype=None):
+    """
+    Set the special values used to flag "missing" data for different data types
+    Values not provided for certain types will remain unchanged.
+    
+    set_missing_value_flags(missingValuesDict)
+    set_missing_value_flags(missingValuesList)
+    set_missing_value_flags(missingValue)
+    set_missing_value_flags(missingValue, vtype=typeStr)
+    set_missing_value_flags(missingValue, vtype=ctypesType)
+
+    Args:
+        missingValuesList : all missing values per type in a list/tuple in the prescribed order
+                            (float, int, uint, double, short, ushort, byte, ubyte)
+        missingValuesDict : all missing values per type in a dic
+                            {
+                            'float'  : ,
+                            'int'    : ,
+                            'uint'   : ,
+                            'double' : ,
+                            'short'  : ,
+                            'ushort' : ,
+                            'byte'   : ,
+                            'ubyte'  : 
+                            }
+        missingValue      : Single value (if type not provided it will try to be infered)
+        typeStr           : one of the str values and in missingValuesDict.keys() above
+        ctypesType        : the corresponding ctype type (c_float, c_int, c_uint, ...)
+    Returns:
+        None
+    Raise:
+        TypeError  on wrong input arg types
+        ValueError on invalid input arg value
+        FSTDError  on other errors        
+        
+    Examples:
+    >>> import rpnpy.librmn.all as rmn
+    >>> fvalue = 8.888888e+37
+    >>> rmn.set_missing_value_flags(fvalue, 'float')
+    >>> missingValues = rmn.get_missing_value_flags()
+    >>> for k in sorted(missingValues.keys()):
+    ...    print('# {:8s} : {}'.format(repr(k), missingValues[k]))
+    # 'byte'   : -128
+    # 'double' : -1e+38
+    # 'float'  : 8.888887703257966e+37
+    # 'int'    : -2147483648
+    # 'short'  : -32768
+    # 'ubyte'  : 255
+    # 'uint'   : 4294967295
+    # 'ushort' : 65535
+
+    See Also:
+        ForceMissingValueUsage
+        missing_value_used
+        get_missing_value_flags
+        EncodeMissingValue
+        DecodeMissingValue
+        SetMissingValueMapping
+    """
+    if _IS_LIST(missingValues):
+        if len(missingValues) != 8:
+            raise TypeError('set_missing_value_flags: missingValues tuple must be of length 8')
+        (f, i, ui, d, s, us, b, ub) = (_ct.c_float(missingValues[0]), _ct.c_int(missingValues[1]),
+                                       _ct.c_uint(missingValues[2]), _ct.c_double(missingValues[3]),
+                                       _ct.c_short(missingValues[4]), _ct.c_ushort(missingValues[5]),
+                                       _ct.c_byte(missingValues[6]), _ct.c_ubyte(missingValues[7]))
+    elif isinstance(missingValues, dict):
+        v = get_missing_value_flags()
+        v.upadte(missingValues)
+        (f, i, ui, d, s, us, b, ub) = (_ct.c_float(v['float']), _ct.c_int(v['int']),
+                                       _ct.c_uint(v['uint']), _ct.c_double(v['double']),
+                                       _ct.c_short(v['short']), _ct.c_ushort(v['ushort']),
+                                       _ct.c_byte(v['byte']), _ct.c_ubyte(v['ubyte']))
+    elif isinstance(missingValues, (float, int)):
+        v = get_missing_value_flags()
+        typeList = {
+            'float'  : (float, _ct.c_float),
+            'int'    : (int,   _ct.c_int),
+            'uint'   : (int,   _ct.c_uint),
+            'double' : (float, _ct.c_double),
+            'short'  : (int,   _ct.c_short),
+            'ushort' : (int,   _ct.c_ushort),
+            'byte'   : (int,   _ct.c_byte),
+            'ubyte'  : (int,   _ct.c_ubyte)
+            }
+        found = False
+        for k in typeList.keys():
+            if ((vtype is None and isinstance(missingValues, typeList[k][0])) or
+                 vtype in typeList[k] or vtype == k):
+                 v[k] = missingValues
+                 found = True
+                 break
+        if not found:
+           raise TypeError('set_missing_value_flags: missingValues unrecognized')
+        (f, i, ui, d, s, us, b, ub) = (_ct.c_float(v['float']), _ct.c_int(v['int']),
+                                       _ct.c_uint(v['uint']), _ct.c_double(v['double']),
+                                       _ct.c_short(v['short']), _ct.c_ushort(v['ushort']),
+                                       _ct.c_byte(v['byte']), _ct.c_ubyte(v['ubyte']))
+        _rp.c_set_missing_value_flags(_ct.byref(f), _ct.byref(i), _ct.byref(ui),
+                                      _ct.byref(d), _ct.byref(s), _ct.byref(us),
+                                      _ct.byref(b), _ct.byref(ub))
+
+
+def EncodeMissingValue(data, nbits, odata=None):
+    """
+    Replacing values that have the "missing data" value with values that are non detrimental
+    to further packing by the "standard file" packers. 
+    
+    odata = EncodeMissingValue(idata, nbits)
+    odata = EncodeMissingValue(idata, nbits, odata)
+
+    Args:
+        idata : data to be encoded (numpy.ndarray, FORTRAN order)
+        nbits : number of bits per element to be used for packing
+        odata : optional, array to be used for output (numpy.ndarray, FORTRAN order)
+    Returns:
+        input array with encoded missing values (numpy.ndarray, FORTRAN order)
+    Raise:
+        TypeError  on wrong input arg types
+        ValueError on invalid input arg value
+        FSTDError  on other errors        
+
+    Examples:
+    >>> import rpnpy.librmn.all as rmn
+    >>> import numpy as np
+    >>> nbits = 16
+    >>> idata = np.empty((3,2), dtype=np.float32, order='F')
+    >>> odata = rmn.EncodeMissingValue(idata, nbits)
+
+    See Also:
+        ForceMissingValueUsage
+        missing_value_used
+        get_missing_value_flags
+        set_missing_value_flags
+        DecodeMissingValue
+        SetMissingValueMapping
+        rpnpy.librmn.const
+    """
+    if not (type(data) == _np.ndarray):
+        raise TypeError("EncodeMissingValue: Expecting args of type {0}, Got {1}"\
+                        .format('numpy.ndarray', type(data)))
+    if not data.flags['F_CONTIGUOUS']:
+        raise TypeError("EncodeMissingValue: Expecting data type " +
+                        "numpy.ndarray with FORTRAN order")
+    if odata is not None:
+        if not (type(odata) == _np.ndarray):
+            raise TypeError("EncodeMissingValue: Expecting args of type {0}, Got {1}"\
+                            .format('numpy.ndarray', type(odata)))
+        if not odata.flags['F_CONTIGUOUS']:
+            raise TypeError("EncodeMissingValue: Expecting odata type " +
+                            "numpy.ndarray with FORTRAN order")
+        if data.dtype != odata.dtype:
+            raise TypeError("EncodeMissingValue: odata must be of same dtype than input data")
+        if not all(data.shape == odata.shape):
+            raise TypeError("EncodeMissingValue: odata must be of same shape than input data")
+    else:
+        # odata = _np.empty(data.shape, dtype=data.dtype, order='F')
+        odata = data.copy(order='F')
+    fst_datyp = _ct.c_int(dtype_numpy2fst(data.dtype))
+    nvalues = _ct.c_int(data.size)
+    is_byte, is_short, is_double = _ct.c_int(0), _ct.c_int(0), _ct.c_int(0)
+    if data.itemsize == 1:
+        is_byte = _ct.c_int(1)
+    elif data.itemsize == 2:
+        is_short = _ct.c_int(1)
+    elif data.itemsize == 8:
+        is_double = _ct.c_int(1)
+    elif data.itemsize != 4:
+        raise TypeError("EncodeMissingValue: data type size unsupported")
+    nval = _rp.c_EncodeMissingValue(data, odata, nvalues, fst_datyp,
+                                    nbits, is_byte, is_short, is_double)
+    ## if nval == 0:
+    ##     print('no val')
+    if nval < 0: #TODO: what is the diff between 0 encoded vals and error?
+        raise FSTDError("EncodeMissingValue: data type size unsupported")
+    return odata
+
+
+def DecodeMissingValue(data):
+    """
+    Replace all occurrences the largest value in array field by the "missing data"
+    value for this kind (datatype) of data. it assumes that EncodeMissingValue
+    has been called before to set the largest value in an adequate manner.
+    
+    odata = DecodeMissingValue(idata)
+
+    Args:
+        idata : data to be decoded (numpy.ndarray, FORTRAN order)
+    Returns:
+        input array with decoded missing values (numpy.ndarray, FORTRAN order)
+    Raise:
+        TypeError  on wrong input arg types
+        ValueError on invalid input arg value
+        FSTDError  on other errors        
+
+    Examples:
+    >>> import rpnpy.librmn.all as rmn
+    >>> import numpy as np
+    >>> nbits = 16
+    >>> idata = np.empty((3,2), dtype=np.float32, order='F')
+    >>> odata  = rmn.EncodeMissingValue(idata, nbits)
+    >>> odata2 = rmn.DecodeMissingValue(odata)
+
+    See Also:
+        ForceMissingValueUsage
+        missing_value_used
+        get_missing_value_flags
+        set_missing_value_flags
+        EncodeMissingValue
+        SetMissingValueMapping
+        rpnpy.librmn.const
+    """
+    if not (type(data) == _np.ndarray):
+        raise TypeError("DecodeMissingValue: Expecting args of type {0}, Got {1}"\
+                        .format('numpy.ndarray', type(data)))
+    if not data.flags['F_CONTIGUOUS']:
+        raise TypeError("DecodeMissingValue: Expecting data type " +
+                        "numpy.ndarray with FORTRAN order")
+    fst_datyp = _ct.c_int(dtype_numpy2fst(data.dtype))
+    nvalues = _ct.c_int(data.size)
+    is_byte, is_short, is_double = _ct.c_int(0), _ct.c_int(0), _ct.c_int(0)
+    if data.itemsize == 1:
+        is_byte = _ct.c_int(1)
+    elif data.itemsize == 2:
+        is_short = _ct.c_int(1)
+    elif data.itemsize == 8:
+        is_double = _ct.c_int(1)
+    elif data.itemsize != 4:
+        raise TypeError("DecodeMissingValue: data type size unsupported")
+    _rp.c_DecodeMissingValue(data, nvalues, fst_datyp,
+                             is_byte, is_short, is_double)
+    return data
+
+
+
+#TODO: SetMissingValueMapping
+## def SetMissingValueMapping(what, datatype, processor_, is_byte, is_short, is_double):
+##     """
+
+    
+##      = 
+
+##     Args:
+        
+##     Returns:
+        
+
+##     Examples:
+##     >>> import rpnpy.librmn.all as rmn
+##     >>> print('# '+rmn.kindToString(rmn.LEVEL_KIND_PMB))
+##     # mb
+##     >>> print('# '+rmn.kindToString(rmn.TIME_KIND_HR))
+##     #  H
+
+##     See Also:
+##         ForceMissingValueUsage
+##         missing_value_used
+##         get_missing_value_flags
+##         set_missing_value_flags
+##         EncodeMissingValue
+##         DecodeMissingValue
+##         rpnpy.librmn.const
+##     """
+##     pass
+
+
+
 # =========================================================================
 
 if __name__ == "__main__":
