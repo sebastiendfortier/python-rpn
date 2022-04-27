@@ -1733,16 +1733,15 @@ def _mrbcvt_dict_full_init():
 
     mypath = _mrbcvt_dict['path']
     if not mypath:
-        AFSISIO = os.getenv('AFSISIO', '')
-        mypath = os.path.join(AFSISIO.strip(), 'datafiles/constants',
-                              _rbc.BURP_TABLE_B_FILENAME)
+        CMCCONST = os.getenv('CMCCONST', '')
+        mypath = os.path.join(CMCCONST.strip(), _rbc.BURP_TABLE_B_FILENAME)
         if not (os.path.isfile(mypath)):
-            mypath = os.path.join(AFSISIO.strip(),
-                                  'datafiles/constants/bufr_table_versions',
+            mypath = os.path.join(CMCCONST.strip(),
+                                  'bufr_table_versions',
                                   _rbc.BURP_TABLE_B_FILENAME)
-        if not (AFSISIO and os.path.isfile(mypath)):
-            AFSISIO2 = os.getenv('rpnpy', '/')
-            mypath = os.path.join(AFSISIO2.strip(), 'share',
+        if not (CMCCONST and os.path.isfile(mypath)):
+            CMCCONST2 = os.getenv('rpnpy', '/')
+            mypath = os.path.join(CMCCONST2.strip(), 'share',
                                   _rbc.BURP_TABLE_B_FILENAME)
 
     try:
@@ -2529,7 +2528,7 @@ def mrbini(funit, rpt, time=None, flgs=None, stnid=None, idtyp=None, ilat=None,
 
     istat = _rp.c_mrbini(funit, rpt, time, flgs, _C_WCHAR2CHAR(stnid),
                          idtyp, ilat, ilon, idx, idy, ielev, drnd, date, oars,
-                         runn, sup, nsup, xaux, nxaux)
+                         runn, sup, nsup,xaux, nxaux)
     if istat != 0:
         raise BurpError('c_mrbini', istat)
     return rpt

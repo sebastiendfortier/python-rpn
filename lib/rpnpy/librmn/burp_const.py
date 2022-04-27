@@ -26,12 +26,12 @@ import numpy as _np
 
 #TODO: cleanup
 ## See:
-## * ls -lL $AFSISIO/datafiles/constants/ | grep -i burp
-## ** $AFSISIO/datafiles/constants/tableburp_[ef].val
+## * ls -lL $CMCCONST/ | grep -i burp
+## ** $CMCCONST/tableburp_[ef].val
 ##    table_b_bufr_[ef]_opsvalid_v23
-## ** $AFSISIO/datafiles/constants/tableburp [fr]
-##    $AFSISIO/datafiles/constants/table_b_bufr_e [en]
-## * ls -lL $AFSISIO/datafiles/constants/ | grep -i bufr
+## ** $CMCCONST/tableburp [fr]
+##    $CMCCONST/table_b_bufr_e [en]
+## * ls -lL $CMCCONST/ | grep -i bufr
 ##
 ## * 3 types of files:
 ## ** table_b_bufr_master, table_b_bufr_[ef], table_b_bufr_[ef]_opsvalid_v23
