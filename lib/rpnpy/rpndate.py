@@ -46,6 +46,7 @@ class RPNDate(object):
         nstep : Step number [int]
 
     Examples:
+    >>> from rpnpy.rpndate import RPNDate
     >>> d1 = RPNDate(20030423, 11453500)
     >>> print('# {0}'.format(repr(d1)))
     # RPNDate(20030423, 11453500)
@@ -69,6 +70,18 @@ class RPNDate(object):
     # True
     >>> print('# {0}'.format(str(d5)))
     # 20030423.11453500
+    >>> d1 = RPNDate(20030423, 11453500)
+    >>> d2 = RPNDate(d1)
+    >>> print("# {} {} {} {} {} {}".format(d1 == d2, d1 != d2, d1 < d2, d1 <= d2, d1 > d2, d1 >= d2))
+    # True False False True False True
+    >>> d2 += 48
+    >>> print("# {} {} {} {} {} {}".format(d1 == d2, d1 != d2, d1 < d2, d1 <= d2, d1 > d2, d1 >= d2))
+    # False True True True False False
+    >>> d2 = d1
+    >>> d1 = RPNDate(d2) + 48
+    >>> print("# {} {} {} {} {} {}".format(d1 == d2, d1 != d2, d1 < d2, d1 <= d2, d1 > d2, d1 >= d2))
+    # False True False False True True
+
 
     See Also:
         RPNDateRange
@@ -157,6 +170,36 @@ class RPNDate(object):
         else:
             return int((self - other)*3600.)
 
+    def __eq__(self, other):
+        if not isinstance(other, RPNDate):
+            raise TypeError('RPNDate cannot compare to non RPNDate')
+        return self.datev == other.datev
+        
+    def __ne__(self, other):
+        if not isinstance(other, RPNDate):
+            raise TypeError('RPNDate cannot compare to non RPNDate')
+        return self.datev != other.datev
+
+    def __lt__(self, other):
+        if not isinstance(other, RPNDate):
+            raise TypeError('RPNDate cannot compare to non RPNDate')
+        return self.datev < other.datev
+
+    def __le__(self, other):
+        if not isinstance(other, RPNDate):
+            raise TypeError('RPNDate cannot compare to non RPNDate')
+        return self.datev <= other.datev
+
+    def __gt__(self, other):
+        if not isinstance(other, RPNDate):
+            raise TypeError('RPNDate cannot compare to non RPNDate')
+        return self.datev > other.datev
+
+    def __ge__(self, other):
+        if not isinstance(other, RPNDate):
+            raise TypeError('RPNDate cannot compare to non RPNDate')
+        return self.datev >= other.datev
+
 
     def __sub__(self, other):
         "Time difference between 2 dates [hours] or Decrease time by nhours"
@@ -242,6 +285,7 @@ class RPNDate(object):
             DateTime obj representing the RPNDate
 
         Examples:
+        >>> from rpnpy.rpndate import RPNDate
         >>> myRPNDate = RPNDate(20030423, 11453600)
         >>> myDateTime = myRPNDate.toDateTime()
         >>> myDateTime
@@ -271,6 +315,7 @@ class RPNDate(object):
             Self
 
         Examples:
+        >>> from rpnpy.rpndate import RPNDate
         >>> d1 = RPNDate(20030423, 11000000, dt=1800, nstep=4)
         >>> print('# {0}'.format(repr(d1)))
         # RPNDate(20030423, 13000000) ; RPNDate(20030423, 11000000, dt=  1800.0, nstep=     4.0)
@@ -318,6 +363,7 @@ class RPNDateRange(object):
         dateFin   : Range end date
 
     Examples:
+    >>> from rpnpy.rpndate import RPNDate, RPNDateRange
     >>> d1 = RPNDate(20030423, 11453500)
     >>> d2 = d1 + 48
     >>> print('# {0}'.format(repr([d1, d2])))
