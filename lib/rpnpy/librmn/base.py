@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-# . s.ssmuse.dot /ssm/net/hpcs/201402/02/base \
-#                /ssm/net/hpcs/201402/02/intel13sp1u2 /ssm/net/rpn/libs/15.2
-# Author: Stephane Chamberland <stephane.chamberland@canada.ca>
+# Author: Stephane Chamberland <stephane.chamberland@ec.gc.ca>
 # Copyright: LGPL 2.1
 
 """

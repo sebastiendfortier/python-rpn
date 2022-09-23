@@ -604,7 +604,12 @@ if __name__ == "__main__":
         'rpnpy.burpc.brpobj',
         'rpnpy.burpc.const',
         'rpnpy.burpc.proto',
-        ]
+        'rpnpy.tdpack.all',
+        'rpnpy.tdpack.proto',
+        'rpnpy.tdpack.base',
+        'rpnpy.tdpack.const',
+        'rpnpy.tdpack.func',
+       ]
     docdir = './doc/'
     m = []
     allSymbolsDict = {}
