@@ -83,8 +83,11 @@ def loadVGDlib(vgd_version=None):
                                 VGD_VERSION_DEFAULT).strip()
     else:
         VGD_VERSION = vgd_version
-    vgd_libfile = 'libvgridshared' + VGD_VERSION.strip() + '.so'
-
+    if (VGD_VERSION.strip() == '' or VGD_VERSION.strip() == '*'):
+        vgd_libfile = 'libvgrid.so'
+    else:
+        vgd_libfile = 'libvgrid.so.' + VGD_VERSION.strip()
+    
     pylibpath   = os.getenv('PYTHONPATH','').split(':')
     ldlibpath   = os.getenv('LD_LIBRARY_PATH','').split(':')
     eclibpath   = os.getenv('EC_LD_LIBRARY_PATH','').split()

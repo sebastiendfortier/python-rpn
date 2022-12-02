@@ -82,7 +82,10 @@ def loadTDPACKlib(tdpack_version=None):
                                     TDPACK_VERSION_DEFAULT).strip()
     else:
         TDPACK_VERSION = tdpack_version
-    tdpack_libfile = 'libtdpack' + TDPACK_VERSION.strip() + '.so'
+    if (TDPACK_VERSION.strip() == '' or TDPACK_VERSION.strip() == '*'):
+        tdpack_libfile = 'libtdpack.so'
+    else:
+        tdpack_libfile = 'libtdpack.so.' + TDPACK_VERSION.strip()
 
     pylibpath   = os.getenv('PYTHONPATH','').split(':')
     ldlibpath   = os.getenv('LD_LIBRARY_PATH','').split(':')
