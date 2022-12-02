@@ -2374,19 +2374,6 @@ def ip3_val(level, kind):
     return ip
 
 
-#TODO: ip_is_equal
-## def ip_is_equal(target, ip, ind):
-##     """Compares different coded values of an ip for equality
-
-##     target: must be first value in the table of coded value to compare with
-##     ip    : current ip record value to compare
-##     ind   : index (1, 2 or 3) representing ip1, ip2 or ip3 comparaisons
-
-##     return ???
-##     """
-##     return _rp.ip_is_equal(target, ip, ind)
-
-
 #--- fstd98/convip_plus & convert_ip123 ---------------------------------
 
 

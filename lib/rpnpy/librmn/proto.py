@@ -689,18 +689,6 @@ Details:
         Returns:
             int, ip3new on success, -1 on error
 
-    c_ip_is_equal(target, ip, ind)
-        Compares different coded values of an ip for equality
-        Proto:
-            int ip_is_equal(int target, int ip, int ind)
-        Args:
-            IN target: must be first value in the table of coded value
-                       to compare with
-            IN ip    : current ip record value to compare
-            IN ind   : index (1, 2 or 3)
-                       representing ip1, ip2 or ip3 comparaisons
-        Returns:
-            int, ... TODO ...
 </source>
 
 === EXTERNAL FUNCTIONS in fstd98/convip_plus and fstd98/convert_ip123 ===
@@ -1910,11 +1898,6 @@ c_ip2_val = librmn.c_ip2_val
 librmn.c_ip3_val.argtypes = (_ct.c_float, _ct.c_int)
 librmn.c_ip3_val.restype  = _ct.c_int
 c_ip3_val = librmn.c_ip3_val
-
-
-librmn.ip_is_equal.argtypes = (_ct.c_int, _ct.c_int, _ct.c_int)
-librmn.ip_is_equal.restype  = _ct.c_int
-c_ip_is_equal = librmn.ip_is_equal
 
 
 #--- fstd98/convip_plus & convert_ip123 ---------------------------------
