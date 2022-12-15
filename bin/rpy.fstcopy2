@@ -108,27 +108,45 @@ def zap_meta(rec, zap, verbose):
     return rec
 
 
+def rec_match(rec, vardir, match):
+    """
+    """
+    for k,v in vardir.items():
+        v2 = rec[k]
+        if isinstance(v2 ,str): 
+            v2 = v2.strip().upper()
+        if not (v in (-1, '', v2)):
+            match = False
+    return match
+
 def copy_rec(inFileId, outFileId, overwrite, matchIn, matchOut,
-             zapValues, verbose):
+             inclist, exclist, zapValues, verbose):
     """
     """
     try:
         klist = select_meta(inFileId, matchIn, matchOut, verbose)
         for key in klist:
             rec = rmn.fstluk(key)
-            rec = zap_meta(rec, zapValues, verbose)
-            rmn.fstecr(outFileId, rec['d'], rec, rewrite=overwrite)
+            match = not (len(inclist) > 0)
+            for incdir in inclist:
+                match = match or rec_match(rec, incdir, True)
+            for excdir in exclist:
+                if rec_match(rec, excdir, len(excdir) > 0):
+                    match = False
+            if match:
+                rec = zap_meta(rec, zapValues, verbose)
+                rmn.fstecr(outFileId, rec['d'], rec, rewrite=overwrite)
     except:
         sys.stderr.write('ERROR: Unknown problem copying records.\n')
         raise
 
 
 def copy_rec_fname(inputFile, outputFile, overwrite, matchIn, matchOut,
-                   zapValues, verbose):
+                   inclist, exclist, zapValues, verbose):
     """
     """
-    rmn.fstopt(rmn.FSTOP_FASTIO, rmn.FSTOPL_TRUE)
-    rmn.fstopt(rmn.FSTOP_IMAGE, rmn.FSTOPL_TRUE)
+    ## rmn.fstopt(rmn.FSTOP_FASTIO, rmn.FSTOPL_TRUE)
+    ## rmn.fstopt(rmn.FSTOP_IMAGE, rmn.FSTOPL_TRUE)
 
     if verbose == 0:
         rmn.fstopt(rmn.FSTOP_MSGLVL, rmn.FSTOPI_MSG_CATAST)
@@ -152,7 +170,7 @@ def copy_rec_fname(inputFile, outputFile, overwrite, matchIn, matchOut,
         raise
     try:
         copy_rec(inFileId, outFileId, overwrite, matchIn, matchOut,
-                 zapValues, verbose)
+                 inclist, exclist, zapValues, verbose)
     except:
         sys.stderr.write('ERROR: Unknown problem copying records.\n')
         raise
@@ -161,6 +179,37 @@ def copy_rec_fname(inputFile, outputFile, overwrite, matchIn, matchOut,
             sys.stdout.write('Closing Files.\n')
         rmn.fstcloseall(outFileId)
         rmn.fstcloseall(inFileId)
+
+
+def varstr2dict(var):
+    """
+    Split string with format
+    ...
+    """
+    mydict = {
+        'nomvar' : ' ',
+        'typvar' : ' ',
+        'etiket' : ' ',
+        'ip1' : -1,
+        'ip2' : -1,
+        'ip3' : -1,
+        'datev' : -1
+        }
+    if len(var) == 0:
+        return {}    
+    mydict.update(dict([[k.strip() for k in keyval.split('=',1)] for keyval in var.split(',')]))
+    if 'vdatev' in mydict.keys():
+        (yyyymmdd, hhmmsshh0) = mydict['vdatev'].split('.')
+        hhmmsshh = int(hhmmsshh0) * 10**(8-len(hhmmsshh0))
+        datev = rmn.newdate(rmn.NEWDATE_PRINT2STAMP, int(yyyymmdd), hhmmsshh)
+        if datev is not None:
+            mydict['datev'] = datev
+    for k in mydict.keys():
+        if k in ('ip1', 'ip2', 'ip3', 'datev'):
+            mydict[k] = int(mydict[k])
+        else:
+            mydict[k] =  mydict[k].strip().upper()
+    return mydict
 
 
 if __name__ == "__main__":
@@ -189,8 +238,8 @@ if __name__ == "__main__":
 ## user    0m1.316s
 ## sys     0m0.156s
 
-    desc="Copy selected records from RPNStd file(s) to another with metadata zapping option using fastio+image options."
-    epilog="-- Options are excluding records according the provided value(s).\n++ Options are selecting records according the provided value(s).\n\nThe default selection critera for all keys is a 'wildcard',\ni.e. all records are selected."
+    desc="Copy selected records from RPNStd file(s) to another with metadata zapping option."
+    epilog="-- Options are excluding records according the provided value(s).\n++ Options are selecting records according the provided value(s).\n\nThe default selection critera for all keys is a 'wildcard',\ni.e. all records are selected.\nSelection creterias are used with OR criterions.... unless specified together with the --var or ++var"
     usage = "%(prog)s -i inputFile -o outputFile [options]"
     parser = argparse.ArgumentParser(
         description=desc, usage=usage, epilog=epilog,
@@ -252,6 +301,11 @@ if __name__ == "__main__":
     ##                     nargs='*', type=str, default=[],
     ##                     metavar='YYYYMMDD.hhmmss',
     ##                     help="Filter records by Valid date (YYYYMMDD.hhmmss)")
+    
+    parser.add_argument("++var", dest="incvar",
+                        nargs='+', type=str, default=[],
+                        metavar="'nomvar=AA, ip1=99, ...'",
+                        help="Var inclusion selection criteria, e.g.: 'nomvar=AA, ip1=99, ip2=-1, ip3=-1, typvar=A, etiket=myetk, datev=-1, vdatev=20160314.0000'")
 
     parser.add_argument("--nomvar",  dest="e_nomvar",
                         nargs='*', type=str, default=[],
@@ -288,6 +342,12 @@ if __name__ == "__main__":
     ##                     metavar='YYYYMMDD.hhmmss',
     ##                     help="Filter out records by Valid date (YYYYMMDD.hhmmss)")
 
+    parser.add_argument("--var", dest="excvar",
+                        nargs='+', type=str, default=[],
+                        metavar="'nomvar=AA, ip1=99, ...'",
+                        help="Var exclusion selection criteria, e.g.: 'nomvar=AA, ip1=99, ip1=-1, ip3=-1, typvar=A, etiket=myetk, datev=-1, vdatev=20160314.0000'")
+   
+
     parser.add_argument("-z", "--zap", dest="zap",
                         nargs='*', type=str, default=[],
                         metavar='KEY=VAL',
@@ -314,6 +374,12 @@ if __name__ == "__main__":
             matchOut[key] = []
         if args.verbose > 1:
             print('Selecting {0:6s} in:{1:10s}, out:{2}'.format(key,str(matchIn[key]),str(matchOut[key])))
+
+    inclist, exclist = [], []
+    for var in args.incvar:
+        inclist.append(varstr2dict(var))
+    for var in args.excvar:
+        exclist.append(varstr2dict(var))
 
     zapValues0 = {
         'datev' : -1, 'dateo' : -1, 'deet' : -1, 'npas' : -1,
@@ -352,7 +418,8 @@ if __name__ == "__main__":
 
     try:
         copy_rec_fname(args.inputFile, args.outputFile, args.overwrite,
-                       matchIn, matchOut, zapValues, args.verbose)
+                       matchIn, matchOut, inclist, exclist, zapValues,
+                       args.verbose)
     except:
         raise
         sys.exit(1)
