@@ -80,7 +80,7 @@ def loadRMNlib(rmn_version=None):
                                 RMN_VERSION_DEFAULT).strip()
     else:
         RMN_VERSION = rmn_version
-    if (TDPACK_VERSION.strip() == '' or TDPACK_VERSION.strip() == '*'):
+    if (RMN_VERSION.strip() == '' or RMN_VERSION.strip() == '*'):
         rmn_libfile = 'librmn.so'
     else:
         rmn_libfile = 'librmn.so.' + RMN_VERSION.strip()
