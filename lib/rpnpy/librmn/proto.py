@@ -6,7 +6,7 @@
 # Copyright: LGPL 2.1
 
 """
-Module librmn is a ctypes import of librmnshared.so
+Module librmn is a ctypes import of librmn.so
 
 The librmn.proto python module includes ctypes prototypes for many
 librmn C functions
@@ -40,7 +40,7 @@ Details:
     See Source Code
 
 ##DETAILS_START
-== Ecternal C Functions ==
+== External C Functions ==
 
 === EXTERNAL FUNCTIONS in primitive ===
 

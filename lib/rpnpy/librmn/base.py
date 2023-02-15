@@ -126,7 +126,7 @@ def fclos(iunit):
        rpnpy.librmn.fstd98.fstcloseall
     """
     if not isinstance(iunit, _integer_types):
-        raise TypeError("fcols: Expecting arg of type int, Got {0}"\
+        raise TypeError("fclos: Expecting arg of type int, Got {0}"\
                         .format(type(iunit)))
     if iunit < 0:
         raise ValueError("fclos: must provide a valid iunit: {0}".format(iunit))

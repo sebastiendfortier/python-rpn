@@ -6,7 +6,7 @@
 # Copyright: LGPL 2.1
 
 """
-Module librmn_const defines a set of helper constants to make code
+Module librmn.const defines a set of helper constants to make code
 using the librmn module more readable.
 
 Notes:
