@@ -5,7 +5,7 @@
 # Author: Stephane Chamberland <stephane.chamberland@canada.ca>
 # Copyright: LGPL 2.1
 """
- Module librmn is a ctypes import of librmnshared.so
+ Module librmn is a ctypes import of librmn.so
  
  The librmn python module includes
  - python wrapper to main librmn's C functions
@@ -21,12 +21,19 @@
      rpnpy.librmn.fstd98
      rpnpy.librmn.interp
      rpnpy.librmn.grids
+     rpnpy.librmn.proto_burp
+     rpnpy.librmn.burp_const
+     rpnpy.librmn.burp
+     rpnpy.librmn.proto_app
+     rpnpy.librmn.app_const
+     rpnpy.librmn.app
 """
 
 from rpnpy.version import *
 
 __SUBMODULES__ = ['proto', 'const', 'base', 'fstd98', 'interp', 'grids',
-                  'proto_burp', 'burp_const', 'burp']
+                  'proto_burp', 'burp_const', 'burp',
+                  'proto_app', 'app_const', 'app']
 __all__ = ['loadRMNlib', 'librmn', 'RMN_VERSION', 'RMN_LIBPATH',
            'RMNError'] + __SUBMODULES__
 
@@ -54,10 +61,10 @@ def checkRMNlibPath(rmn_libfile):
 
 def loadRMNlib(rmn_version=None):
     """
-    Import librmnshared using ctypes
+    Import librmn shared using ctypes
 
     Args:
-       rmn_version (str): librmnshared version number to load
+       rmn_version (str): librmn shared version number to load
                           Default: RPNPY_RMN_VERSION Env.Var.
                                    RMN_VERSION_DEFAULT if not RPNPY_RMN_VERSION
     Returns:
@@ -67,13 +74,11 @@ def loadRMNlib(rmn_version=None):
        RMN_LIBPATH (str)  : path to loaded librmn shared lib
        librmn      (CDLL) : ctypes library object for librmn.so
 
-    Library 'librmnsharedVERSION.so' is searched into the Env.Var. paths:
+    Library 'librmn.so.VERSION' is searched into the Env.Var. paths:
        PYTHONPATH, EC_LD_LIBRARY_PATH, LD_LIBRARY_PATH
     """
     import os
     import ctypes as ct
-    ## import numpy  as np
-    ## import numpy.ctypeslib as npct
 
     if rmn_version is None:
         RMN_VERSION = os.getenv('RPNPY_RMN_VERSION',
