@@ -4,4 +4,4 @@ sles-15-skylake-64-xc50:eccc/cmd/cmda/libs/19.7.0/PrgEnv-intel-6.0.5-19.0.5.281
 
 rhel-8-icelake-64:eccc/cmd/cmda/libs/20220216/inteloneapi-2022.1.2
 
-eccc/cmo/cmoi/base/20200123
+eccc/cmo/cmoi/base/20220331
