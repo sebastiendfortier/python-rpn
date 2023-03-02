@@ -808,7 +808,9 @@ def c_mrbcvt(lstele, tblval, rval, nele, nval, nt, mode):
 librmn.c_mrbini.argtypes = (_ct.c_int, _npc.ndpointer(dtype=_np.int32),
     _ct.c_int, _ct.c_int, _ct.c_char_p, _ct.c_int, _ct.c_int, _ct.c_int,
     _ct.c_int, _ct.c_int, _ct.c_int, _ct.c_int, _ct.c_int, _ct.c_int,
-    _ct.c_int, _ct.c_int, _ct.c_int, _ct.c_int, _ct.c_int)
+    _ct.c_int,
+    _npc.ndpointer(dtype=_np.int32), _ct.c_int,
+    _npc.ndpointer(dtype=_np.int32), _ct.c_int)
 librmn.c_mrbini.restype = _ct.c_int
 c_mrbini = librmn.c_mrbini
 

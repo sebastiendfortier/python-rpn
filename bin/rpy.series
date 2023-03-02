@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: Stephane Chamberland <stephane.chamberland@canada.ca>
 # Copyright: LGPL 2.1
@@ -12,6 +11,13 @@ Example:
         --title "TT for levels: 0.9733 sg and 0.6034 sg"\
         --axe "TT [C]"\
         -i $CMCGRIDF/prog/regeta/$(date '+%Y%m%d')00_*
+
+ rpy.series  -v \
+       --var 'nomvar=tt, ip1=95230840' 'nomvar=tt, ip1=93423264' \
+       --ll '45.,273.5' '46.,274.' \
+       --title "TT for levels: 0.859 hy and 1. hy" \
+       --axe "TT [C]" \
+       -i ${ATM_MODEL_DFILES}/bcmk/2009042700_0*
 """
 
 import sys

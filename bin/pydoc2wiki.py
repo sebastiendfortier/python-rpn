@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 Long
 
@@ -562,7 +562,7 @@ class MyDocFile(MyDocFileObj):
     def symbolsDict(self):
         name2 = self['name'].replace('.','/')
         d = {self['name'] : name2}
-        for x in self['data'].symbols() + self['func'].symbols() + self['class'].symbols():
+        for x in list(self['data'].symbols()) + list(self['func'].symbols()) + list(self['class'].symbols()):
             d[self['name']+'.'+x] = name2+'#'+x
         return d
 

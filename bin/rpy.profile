@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # Author: Stephane Chamberland <stephane.chamberland@canada.ca>
 # Copyright: LGPL 2.1
@@ -10,6 +9,12 @@ Example:
         --ll '45.,273.5' '46.,274.' \
         --axe 'TT [C]' \
         -i $CMCGRIDF/prog/regeta/$(date '+%Y%m%d')00_*
+
+   rpy.profile  -v --inlog \
+        --var 'nomvar=tt, ip2=0' \
+        --ll '45.,273.5' '46.,274.' \
+        --axe 'TT [C] / HU [kg/kg]' \
+        -i ${ATM_MODEL_DFILES}/bcmk/2009042700_000
 """
 
 import sys

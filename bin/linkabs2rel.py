@@ -1,10 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 import os,string,sys,optparse
 
 def getCommonPrefix(path1,path2):
     #path1 and path2 must be absolute path to dir or files
-    path1l=string.split(path1,'/')
-    path2l=string.split(path2,'/')
+    path1l=path1.split('/')
+    path2l=path2.split('/')
     cnt=0
     common='/'
     while cnt < len(path1l) and cnt < len(path2l) and path1l[cnt] == path2l[cnt]:
@@ -22,9 +22,9 @@ def getRelPath(fromdir,todir,nodotslash=1):
     todir   = os.path.abspath(todir) + '/'
     common  = getCommonPrefix(fromdir,todir)
     #common  = os.path.commonprefix((fromdir,todir))
-    fromdir = os.path.normpath(string.replace(fromdir,common,'',1))
+    fromdir = os.path.normpath(fromdir.replace(common,'',1))
 
-    todir   = os.path.normpath(string.replace(todir,common,'',1))
+    todir   = os.path.normpath(todir.replace(common,'',1))
     pathprefix=''
     while fromdir:
         if fromdir != '.':
@@ -74,13 +74,13 @@ def linkabstorel(mypath,mytest,myverbose):
     
     mytargetnew = os.path.normpath(os.path.join(myrelpath,mytarget1))
     
+    if myverbose:
+        print("From {} --> {}".format(mypath, os.readlink(mypath)))
+        print("To   {} --> {}".format(mypath, mytargetnew))
     if not mytest:
         os.unlink(mylkname)
         os.chdir(mylkname0)
         os.symlink(mytargetnew,mylkname1)
-    if myverbose:
-        print "From ",mypath," --> ",os.readlink(mypath)
-        print "To   ",mypath," --> ",mytargetnew
 
 #===============================================================
 if __name__ == "__main__":
@@ -110,11 +110,11 @@ if __name__ == "__main__":
                 if os.path.isabs(os.readlink(mylinkpath)):
                     linkabstorel(os.path.abspath(mylinkpath),mytest,myverbose)
                 else:
-                    if myverbose: print mylinkpath," Link already relative"
+                    if myverbose: print("{} Link already relative".format(mylinkpath))
             else:
-                if myverbose: print mylinkpath, " Not a link"
+                if myverbose: print("{} Not a link".format(mylinkpath))
         else:
-            if myverbose: print mylinkpath," Not such file or directory"
+            if myverbose: print("{} Not such file or directory".format(mylinkpath))
 
 
 # -*- Mode: C; tab-width: 4; indent-tabs-mode: nil -*-
