@@ -25,6 +25,7 @@ import numpy  as _np
 
 from rpnpy.librmn import proto_app as _ap
 from rpnpy.librmn import app_const as _ac
+from rpnpy.librmn import const as _rc
 from rpnpy.librmn import RMNError
 
 from rpnpy import integer_types as _integer_types
@@ -35,6 +36,27 @@ from rpnpy import C_MKSTR as _C_MKSTR
 _C_TOINT = lambda x: (x if (type(x) != type(_ct.c_int())) else x.value)
 _C_TOINT.__doc__ = 'lamda function to convert ctypes.c_int to python int'
 
+APP2FST_LEVELS = {
+    _ac.APP_VERBATIM : _rc.FSTOPI_MSG_DEBUG,
+    _ac.APP_ALWAYS : _rc.FSTOPI_MSG_DEBUG,
+    _ac.APP_FATAL : _rc.FSTOPI_MSG_FATAL,
+    _ac.APP_SYSTEM : _rc.FSTOPI_MSG_SYSTEM,
+    _ac.APP_ERROR : _rc.FSTOPI_MSG_ERROR,
+    _ac.APP_WARNING : _rc.FSTOPI_MSG_WARNING,
+    _ac.APP_INFO : _rc.FSTOPI_MSG_INFO,
+    _ac.APP_TRIVIAL : _rc.FSTOPI_MSG_INFO,
+    _ac.APP_DEBUG : _rc.FSTOPI_MSG_DEBUG,
+    _ac.APP_EXTRA : _rc.FSTOPI_MSG_DEBUG,
+    _ac.APP_QUIET : _rc.FSTOPI_MSG_CATAST
+    }
+
+def App_LevelFST2App(level):
+    for k, v in APP2FST_LEVELS.items():
+        if v == level:
+            return k
+        
+def App_LevelApp2Fst(level):
+    return APP2FST_LEVELS[level]
 
 def App_LogLevelNo(level):
     """

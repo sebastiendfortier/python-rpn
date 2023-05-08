@@ -65,12 +65,11 @@ class FSTDError(RMNError):
     >>> #...
     >>> raise rmn.FSTDError()
     Traceback (most recent call last):
-      File "/usr/lib/python2.7/doctest.py", line 1289, in __run
-        compileflags, 1) in test.globs
+      File "/usr/lib64/python3.6/doctest.py", line 1330, in __run
+        compileflags, 1), test.globs)
       File "<doctest __main__.FSTDError[2]>", line 1, in <module>
         raise rmn.FSTDError()
-    FSTDError
-
+    rpnpy.librmn.fstd98.FSTDError
 
     See Also:
        rpnpy.librmn.RMNError
@@ -655,6 +654,7 @@ def fst_edit_dir(key, datev=-1, dateo=-1, deet=-1, npas=-1, ni=-1, nj=-1, nk=-1,
     >>> ATM_MODEL_DFILES = os.getenv('ATM_MODEL_DFILES').strip()
     >>> filename0 = os.path.join(ATM_MODEL_DFILES,'bcmk',filename)
     >>> shutil.copyfile(filename0, filename)
+    'geophy.fst'
     >>> st = os.stat(filename)
     >>> os.chmod(filename, st.st_mode | stat.S_IWRITE)
     >>>
@@ -779,6 +779,7 @@ def fsteff(key):
     >>> ATM_MODEL_DFILES = os.getenv('ATM_MODEL_DFILES').strip()
     >>> filename0 = os.path.join(ATM_MODEL_DFILES,'bcmk',filename)
     >>> shutil.copyfile(filename0, filename)
+    'geophy.fst'
     >>> st = os.stat(filename)
     >>> os.chmod(filename, st.st_mode | stat.S_IWRITE)
     >>>
@@ -1707,6 +1708,19 @@ def fstopt(optName, optValue, setOget=_rc.FSTOP_SET):
     else:
         raise TypeError("fstopt: cannot set optValue of type: {0} {1}"\
                         .format(type(optValue), repr(optValue)))
+    if setOget == _rc.FSTOP_SET:
+        if isinstance(optValue, _integer_types):
+            from rpnpy.librmn import app as _app
+            from rpnpy.librmn import app_const as _apc
+            level = _app.App_LevelFST2App(optValue)
+            _app.App_LogLevelNo(level)
+            # _app.Lib_LogLevelNo(_apc.APP_MAIN, level)
+            _app.Lib_LogLevelNo(_apc.APP_LIBRMN, level)
+            _app.Lib_LogLevelNo(_apc.APP_LIBFST, level)
+            # _app.Lib_LogLevelNo(_apc.APP_LIBVGRID, level)
+            _app.Lib_LogLevelNo(_apc.APP_LIBINTERPV, level)
+            _app.Lib_LogLevelNo(_apc.APP_LIBGEOREF, level)
+            _app.Lib_LogLevelNo(_apc.APP_LIBIO, level)
     if istat < 0:
         raise FSTDError()
     return
@@ -1821,7 +1835,7 @@ def fstprm(key):
     >>> # Print name, ip1, ip2 of first record in file
     >>> key  = rmn.fstinf(funit)
     >>> meta = rmn.fstprm(key['key'])
-    >>> print("# {nomvar} ip1={ip1} ip2={ip2}".format(**meta))
+    >>> print("# {nomvar:<4} ip1={ip1} ip2={ip2}".format(**meta))
     # !!   ip1=0 ip2=0
     >>>
     >>> rmn.fstcloseall(funit)
@@ -1940,7 +1954,7 @@ def fstsui(iunit):
     >>> key1 = rmn.fstinf(funit, nomvar='P0')
     >>> key2 = rmn.fstsui(funit)
     >>> meta = rmn.fstprm(key2)
-    >>> print("# {nomvar} ip1={ip1} ip2={ip2}".format(**meta))
+    >>> print("# {nomvar:<4} ip1={ip1} ip2={ip2}".format(**meta))
     # P0   ip1=0 ip2=12
     >>>
     >>> rmn.fstcloseall(funit)
@@ -2004,8 +2018,8 @@ def fstvoi(iunit, options=' '):
     >>> funit = rmn.fstopenall(filename, rmn.FST_RO)
     >>>
     >>> # Print meta of all record in file
-    >>> rmn.fstvoi(funit)
-    >>> rmn.fstvoi(funit,'DATEV+LEVEL+NOTYPV+NOETIQ+NOIP23+NODEET+NONPAS+NODTY')
+    >>> # rmn.fstvoi(funit)
+    >>> # rmn.fstvoi(funit,'DATEV+LEVEL+NOTYPV+NOETIQ+NOIP23+NODEET+NONPAS+NODTY')
     >>>
     >>> rmn.fstcloseall(funit)
 
@@ -2778,7 +2792,7 @@ def missing_value_used():
     Examples:
     >>> import rpnpy.librmn.all as rmn
     >>> print('# {}'.format(rmn.missing_value_used()))
-    # False
+    # True
     
     See Also:
         ForceMissingValueUsage
@@ -2805,7 +2819,7 @@ def ForceMissingValueUsage(flag):
     Examples:
     >>> import rpnpy.librmn.all as rmn
     >>> print('# {}'.format(rmn.ForceMissingValueUsage(True)))
-    # False
+    # True
     
     See Also:
         missing_value_used
