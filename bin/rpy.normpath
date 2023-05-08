@@ -1,0 +1,27 @@
+#!/usr/bin/env python3
+
+import argparse
+import os.path
+import sys
+
+def main(): 
+
+    # Command line argument parsing
+    desc="Returns python-normalized PATH."
+    usage="%(prog)s -p PATH"
+    epilog=""
+    parser = argparse.ArgumentParser(
+        description=desc, usage=usage, epilog=epilog,
+        prefix_chars='-', formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("-p", "--path", dest="path",
+                        type=str, default=None, required=True,
+                        help="PATH to be normalised",
+                        metavar="PATH")
+    args = parser.parse_args()
+                          
+    sys.stdout.write(os.path.normpath(args.path))
+
+
+if __name__ == "__main__":
+    main()
+

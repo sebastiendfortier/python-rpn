@@ -23,7 +23,6 @@ rpn_version.py
 utils/test_get_corners_xy.f90
 utils/get_corners_xy.f90
 utils/vect_mod.f90
-Makefile
 Makefile.build*
 Makefile.rules*
 Makefile.dep*
@@ -31,3 +30,4 @@ lib/rpnpy/version.py
 build-*
 include/rpnpy_version.*
 .setenv.__extlib__.*.dot
+_testlog_/

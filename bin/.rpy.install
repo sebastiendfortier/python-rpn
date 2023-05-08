@@ -1,0 +1,25 @@
+#!/bin/bash
+
+installpath=$(bin/rpy.normpath -p ${1:-$(pwd)})
+versionx=$(cat VERSION)
+installdir=${installpath%/}/${versionx}.d
+rloadfile=${installpath%/}/${versionx}.sh
+
+if [[ ${installpath} == $(pwd) ]] ; then
+   printf "WARNING: Cannot install in PWD\n" 1>&2
+   installdir=$(pwd)
+   rloadfile=./${versionx#x/}.sh
+else
+   printf "Installing in: ${installdir}\n"
+   mkdir -p ${installdir}
+   rsync -a --exclude=.git/ --exclude=_testlog_/ $(pwd)/ ${installdir}/
+   cd ${installdir}
+fi
+
+./bin/.rpy.mk.version
+
+printf "Creating r.load.dot file: ${rloadfile}\n"
+cat > ${rloadfile} <<EOF
+#!/bin/bash
+${installdir}/bin/.env_setup.dot rpnpy ${versionx#x/} all ${installdir} ${installdir} 
+EOF

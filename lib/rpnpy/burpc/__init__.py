@@ -93,7 +93,8 @@ def load_burpc_lib(burpc_version=None):
                                   BURPC_VERSION_DEFAULT).strip()
     else:
         BURPC_VERSION = burpc_version
-    burpc_libfile = 'libburp_c_shared' + BURPC_VERSION.strip() + '.so'
+    ## burpc_libfile = 'libburp_c_shared' + BURPC_VERSION.strip() + '.so'
+    burpc_libfile = 'libburp_c_shared.so'
 
     pylibpath = os.getenv('PYTHONPATH', '').split(':')
     ldlibpath = os.getenv('LD_LIBRARY_PATH', '').split(':')

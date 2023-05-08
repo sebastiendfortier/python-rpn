@@ -1,5 +1,0 @@
-MAKE   = make
-PYARCH = 
-CCNAME = 
-CCOPT  = 
-LDFLAGS=

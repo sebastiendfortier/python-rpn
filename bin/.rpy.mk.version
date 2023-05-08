@@ -1,0 +1,8 @@
+#!/bin/bash
+
+echo 'Updating: lib/rpnpy/version.py'
+cat > lib/rpnpy/version.py <<EOF
+__VERSION__ = '${1:-$(cat VERSION | cut -d/ -f2)}'
+__LASTUPDATE__ = '$(date '+%Y-%m-%d %H:%M %Z')'
+EOF
+cat lib/rpnpy/version.py

@@ -1,4 +1,9 @@
 
-ubuntu-18.04-amd64-64:/ssm/net/cmda/libs/19.7.0/intel-19.0.3.199/
+/fs/ssm/eccc/mrd/rpn/code-tools/ENV/cdt-1.6.2/ECCC/inteloneapi-2022.1.2
 
-/fs/ssm/eccc/cmo/cmoi/base/20180117
+/fs/ssm/eccc/mrd/rpn/MIG/ENV/sep
+
+/fs/ssm/eccc/mrd/rpn/libs/20230414
+/fs/ssm/eccc/cmd/cmda/libs/20230414/inteloneapi-2022.1.2
+
+/fs/ssm/eccc/cmo/cmoi/base/20230316

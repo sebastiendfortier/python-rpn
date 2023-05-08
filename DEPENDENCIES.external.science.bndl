@@ -1,8 +1,10 @@
 
-ubuntu-18.04-skylake-64:eccc/cmd/cmda/libs/19.7.0/intel-19.0.3.199
-sles-15-skylake-64-xc50:eccc/cmd/cmda/libs/19.7.0/PrgEnv-intel-6.0.5-19.0.5.281
+/fs/ssm/eccc/mrd/rpn/code-tools/ENV/cdt-1.6.2/SCIENCE/inteloneapi-2022.1.2
 
-rhel-8-icelake-64:eccc/cmd/cmda/libs/20220216/inteloneapi-2022.1.2
-rhel-8-icelake-64:eccc/mrd/rpn/libs/packages/tdpack_1.6.1-inteloneapi-2022.1.2_rhel-8-icelake-64
+/fs/ssm/eccc/mrd/rpn/MIG/ENV/sep
 
-eccc/cmo/cmoi/base/20220331
+/fs/ssm/eccc/mrd/rpn/libs/20230414
+/fs/ssm/eccc/cmd/cmda/libs/20230414/inteloneapi-2022.1.2
+
+
+/fs/ssm/eccc/cmo/cmoi/base/20230316
