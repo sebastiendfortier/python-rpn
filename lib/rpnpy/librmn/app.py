@@ -110,9 +110,9 @@ def Lib_LogLevelNo(libId, level):
     Examples:
     >>> import os, sys
     >>> import rpnpy.librmn.all as rmn
-    >>> level0 = rmn.Lib_LogLevelNo(rmn.APP_LIBVGRID, rmn.APP_QUIET)
-    >>> print("# Set libId={} from level={} '{}' to {} '{}'".format(rmn.APP_LIBVGRID, level0, rmn.APP_LOGLEVEL_NAMES[level0], rmn.APP_QUIET, rmn.APP_LOGLEVEL_NAMES[rmn.APP_QUIET]))
-    # Set libId=5 from level=0 'ALWAYS' to 9 'QUIET'
+    >>> level0 = rmn.Lib_LogLevelNo(rmn.APP_LIBVGRID, rmn.APP_ERROR)
+    >>> print("# Set libId={} from level={} '{}' to {} '{}'".format(rmn.APP_LIBVGRID, level0, rmn.APP_LOGLEVEL_NAMES[level0], rmn.APP_ERROR, rmn.APP_LOGLEVEL_NAMES[rmn.APP_ERROR]))
+    # Set libId=5 from level=9 'QUIET' to 3 'ERROR'
     
     See also:
        fnom
