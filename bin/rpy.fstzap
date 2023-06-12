@@ -190,7 +190,7 @@ if __name__ == "__main__":
     parser.add_argument("-z", "--zap", dest="zap",
                         nargs='+', required=True, type=str, default=[],
                         metavar='KEY=VAL',
-                        help="Zap key=value (e.g. ip1=123)")
+                        help="Zap key=value (e.g. ip1=123); for deep,npas changes, datev is preserved unless keep_dateo=True is specified")
 
     args = parser.parse_args()
     

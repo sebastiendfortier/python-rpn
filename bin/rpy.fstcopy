@@ -91,6 +91,7 @@ def zap_meta(rec, zap, verbose):
             if not (key in ('deet', 'npas', 'dateo', 'datev') or val is None):
                 rec[key] = val
 
+        npas0 = rec['npas']
         deet1  = rec['deet']  if zap['deet']  is None else zap['deet']
         npas1  = rec['npas']  if zap['npas']  is None else zap['npas']
         dateo1 = rec['dateo'] if zap['dateo'] is None else zap['dateo']
@@ -99,7 +100,7 @@ def zap_meta(rec, zap, verbose):
             nhours = float(deet1) * float(npas1) / -3600.
             dateo1 = rmn.incdatr(datev1, nhours)
         rec['deet']  = deet1
-        rec['npas1'] = npas1
+        rec['npas']  = npas1
         rec['dateo'] = dateo1
         rec['datev'] = datev1 #irrelevent for writing
     except:
@@ -266,7 +267,7 @@ if __name__ == "__main__":
     parser.add_argument("-z", "--zap", dest="zap",
                         nargs='*', type=str, default=[],
                         metavar='KEY=VAL',
-                        help="Zap key=value (e.g. ip1=123)")
+                        help="Zap key=value (e.g. ip1=123); for deep,npas changes, datev is preserved unless keep_dateo=True is specified")
 
     args = parser.parse_args()
     
