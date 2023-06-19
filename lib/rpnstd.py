@@ -1521,16 +1521,16 @@ class RPNRec(RPNMeta):
     >>> a = numpy.array([1, 2, 3, 4], order='F', dtype='float32')
     >>> r = RPNRec(a)
     >>> r.d
-    array([ 1.,  2.,  3.,  4.], dtype=float32)
+    array([1., 2., 3., 4.], dtype=float32)
     >>> a[1] = 5
     >>> r.d #r.d is a reference to a, thus changing a changes a
-    array([ 1.,  5.,  3.,  4.], dtype=float32)
+    array([1., 5., 3., 4.], dtype=float32)
     >>> r = RPNRec(a.copy(), RPNMeta(grtyp='X'))
     >>> r.d
-    array([ 1.,  5.,  3.,  4.], dtype=float32)
+    array([1., 5., 3., 4.], dtype=float32)
     >>> a[1] = 9
     >>> r.d #r.d is a copy of a, thus changing a does not change a
-    array([ 1.,  5.,  3.,  4.], dtype=float32)
+    array([1., 5., 3., 4.], dtype=float32)
     >>> r.grtyp
     'X'
     >>> r = RPNRec([1, 2, 3, 4])

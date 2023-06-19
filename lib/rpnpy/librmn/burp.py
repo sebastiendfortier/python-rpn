@@ -96,11 +96,11 @@ class BurpError(RMNError):
     >>> #...
     >>> raise rmn.BurpError()
     Traceback (most recent call last):
-      File "/usr/lib/python2.7/doctest.py", line 1289, in __run
-        compileflags, 1) in test.globs
-      File "<doctest __main__.BurpError[4]>", line 1, in <module>
+      File "/usr/lib64/python3.6/doctest.py", line 1330, in __run
+        compileflags, 1), test.globs)
+      File "<doctest __main__.BurpError[2]>", line 1, in <module>
         raise rmn.BurpError()
-    BurpError: 'Error occured while executing; '
+    rpnpy.librmn.burp.BurpError: 'Error occured while executing; '
 
     See Also:
        rpnpy.librmn.RMNError

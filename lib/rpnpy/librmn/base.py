@@ -82,6 +82,29 @@ def get_funit(filename, filemode=_rc.FST_RW, iunit=0):
         ValueError on invalid input arg value
         RMNBaseError on any other error
 
+    Examples:
+    >>> import os, sys
+    >>> import rpnpy.librmn.all as rmn
+    >>> filename = 'myfstfile.fst'
+    >>> try:
+    ...     iunit = rmn.fnom(filename, rmn.FST_RW)
+    ... except rmn.RMNBaseError:
+    ...     sys.stderr.write("There was a problem opening the file: {0}".format(filename))
+    >>> filename2 = 'myfstfile2.fst'
+    >>> iunit2 = rmn.get_funit(filename2, rmn.FST_RW)
+    >>> print("{} {}".format(iunit,iunit2))
+    999 998
+    >>> istat = rmn.fclos(iunit)
+    >>> rmn.fstopt(rmn.FSTOP_MSGLVL,rmn.FSTOPI_MSG_CATAST)
+    >>> try:
+    ...     istat = rmn.fclos(iunit2)
+    ...     print("# Should NOT print this")
+    ... except rmn.RMNBaseError:
+    ...     print("# Should print this")
+    # Should print this
+    >>> os.unlink(filename)  # Remove test file
+    >>> os.unlink(filename2)  # Remove test file
+
     Notes:
         New function in version 2.1.b2
 

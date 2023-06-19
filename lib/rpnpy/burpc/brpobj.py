@@ -1437,7 +1437,7 @@ class BurpcEle(_BurpcObjBase):
     >>> ele = brp.BurpcEle({'e_bufrid' : 10004, 'e_rval' : [10000., 10010.]})
     >>> print("# {}: {}, (units={}), shape=[{}, {}], value={}"
     ...       .format(ele.e_bufrid, ele.e_desc, ele.e_units, ele.nval, ele.nt, ele.e_rval.ravel()))
-    # 10004: PRESSURE, (units=PA), shape=[2, 1], value=[ 10000.  10010.]
+    # 10004: PRESSURE, (units=PA), shape=[2, 1], value=[10000. 10010.]
 
     See Also:
         BurpcFile

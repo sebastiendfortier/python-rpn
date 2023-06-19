@@ -1698,6 +1698,7 @@ def vgd_stda76_temp(vgd_ptr, ip1list='VIPM'):
     Examples:
     >>> import sys
     >>> import rpnpy.vgd.all as vgd
+    >>> import numpy as np
     >>> lvls  = (0.000,   0.011,    0.027,    0.051,    0.075,
     ...          0.101,   0.127,    0.155,    0.185,    0.219,
     ...          0.258,   0.302,    0.351,    0.405,    0.460,
@@ -1714,13 +1715,10 @@ def vgd_stda76_temp(vgd_ptr, ip1list='VIPM'):
     ...     stda76_temp = vgd.vgd_stda76_temp(myvgd)
     ... except vgd.VGDError:
     ...     sys.stderr.write("There was a problem getting the stda76 temperture")
-    >>> print('stda76_temp={}'.format(stda76_temp))
-    stda76_temp=[ 227.70584106  222.80267334  219.13482666  216.6499939   216.6499939
-      216.6499939   216.6499939   216.6499939   216.6499939   217.26150513
-      223.86172485  230.43205261  236.91807556  243.28668213  249.11688232
-      254.51049805  259.62689209  264.26861572  268.58728027  272.56045532
-      276.04125977  278.97198486  281.53799438  283.77682495  285.66186523
-      287.05548096  287.7689209   288.1499939 ]
+    >>> print('stda76_temp={}'.format(np.round(stda76_temp,2)))
+    stda76_temp=[227.71 222.8  219.13 216.65 216.65 216.65 216.65 216.65 216.65 217.26
+     223.86 230.43 236.92 243.29 249.12 254.51 259.63 264.27 268.59 272.56
+     276.04 278.97 281.54 283.78 285.66 287.06 287.77 288.15]
     """
     if isinstance(ip1list, str):
         ip1list0 = vgd_get(vgd_ptr, ip1list)
@@ -1765,6 +1763,7 @@ def vgd_stda76_pres(vgd_ptr, ip1list='VIPM', sfc_temp=None, sfc_pres=None):
     Examples:
     >>> import sys
     >>> import rpnpy.vgd.all as vgd
+    >>> import numpy as np
     >>> hyb = (30968.,  16765., 5477., 880., 0.)
     >>> (rcoef1, rcoef2, rcoef3, rcoef4) = (0., 5., 0., 100.)
     >>> (kind, version) = (21, 2)
@@ -1775,25 +1774,22 @@ def vgd_stda76_pres(vgd_ptr, ip1list='VIPM', sfc_temp=None, sfc_pres=None):
     ...     stda76_pres = vgd.vgd_stda76_pres(my_vgd)
     ... except vgd.VGDError:
     ...     sys.stderr.write("There was a problem getting the stda76 pressure")
-    >>> print('stda76_pres={}'.format(stda76_pres))
-    stda76_pres=[   1013.26861572    9119.25683594   50665.609375     91190.859375    101325.
-      101325.          101204.9296875 ]
+    >>> print('stda76_pres={}'.format(np.round(stda76_pres,2)))
+    stda76_pres=[  1013.27   9119.26  50665.61  91190.86 101325.   101325.   101204.93]
     >>> sfc_temp = 273.
     >>> try:
     ...     stda76_pres = vgd.vgd_stda76_pres(my_vgd, sfc_temp=sfc_temp)
     ... except vgd.VGDError:
     ...     sys.stderr.write("There was a problem getting the stda76 pressure")
-    >>> print('stda76_pres={}'.format(stda76_pres))
-    stda76_pres=[    730.36712646    7728.3359375    48616.93359375   90653.484375    101325.
-      101325.          101198.2734375 ]
+    >>> print('stda76_pres={}'.format(np.round(stda76_pres,2)))
+    stda76_pres=[   730.37   7728.34  48616.94  90653.48 101325.   101325.   101198.27]
     >>> sfc_pres = 100000.
     >>> try:
     ...     stda76_pres = vgd.vgd_stda76_pres(my_vgd, sfc_pres=sfc_pres)
     ... except vgd.VGDError:
     ...     sys.stderr.write("There was a problem getting the stda76 pressure")
-    >>> print('stda76_pres={}'.format(stda76_pres))
-    stda76_pres=[   1000.01843262    9000.00683594   50003.0703125    89998.375       100000.
-      100000.           99881.5       ]
+    >>> print('stda76_pres={}'.format(np.round(stda76_pres,2)))
+    stda76_pres=[  1000.02   9000.01  50003.07  89998.38 100000.   100000.    99881.5 ]
     """
     if isinstance(ip1list, str):
         ip1list0 = vgd_get(vgd_ptr, ip1list)
@@ -1840,14 +1836,14 @@ def vgd_stda76_hgts_from_pres_list(pres=None):
     Examples:
     >>> import sys
     >>> import rpnpy.vgd.all as vgd
+    >>> import numpy as np
     >>> pres = (100000., 85000., 50000., 25000., 10000., 1000., 100., 10.)
     >>> try:
     ...     hgts = vgd.vgd_stda76_hgts_from_pres_list(pres=pres)
     ... except vgd.VGDError:
     ...     sys.stderr.write("There was a problem getting stda76 heights from pressure list")
-    >>> print('hgts={}'.format(hgts))
-    hgts=[   110.8887558    1457.35668945   5574.64160156  10363.29980469
-      16180.29980469  31055.84375     47822.2265625   64949.40234375]
+    >>> print('hgts={}'.format(np.round(hgts,2)))
+    hgts=[  110.89  1457.36  5574.64 10363.3  16180.3  31055.84 47822.22 64949.4 ]
     """
     if isinstance(pres, (list, tuple)):
         shape = None
@@ -1887,15 +1883,16 @@ def vgd_stda76_pres_from_hgts_list(hgts=None):
     Examples:
     >>> import sys
     >>> import rpnpy.vgd.all as vgd
+    >>> import numpy as np
     >>> hgts=(110.8887558, 1457.35668945, 5574.64160156, 10363.29980469,
     ...       16180.29980469, 31055.84375, 47822.2265625, 64949.40234375)
     >>> try:
     ...     pres = vgd.vgd_stda76_pres_from_hgts_list(hgts=hgts)
     ... except vgd.VGDError:
     ...     sys.stderr.write("There was a problem getting stda76 pressure from height list")
-    >>> print('pres={}'.format(pres))
-    pres=[  1.00000016e+05   8.50000078e+04   4.99999961e+04   2.50000020e+04
-       1.00000010e+04   1.00000079e+03   9.99999924e+01   1.00000019e+01]
+    >>> print('pres={}'.format(np.round(pres,2)))
+    pres=[1.0000002e+05 8.5000008e+04 5.0000000e+04 2.5000000e+04 1.0000000e+04
+     1.0000000e+03 1.0000000e+02 1.0000000e+01]
     """
     if isinstance(hgts, (list, tuple)):
         shape = None
