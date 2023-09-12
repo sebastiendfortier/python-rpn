@@ -1,9 +1,9 @@
 
-/fs/ssm/eccc/mrd/rpn/code-tools/ENV/cdt-1.6.4/ECCC/inteloneapi-2022.1.2
+/fs/ssm/eccc/mrd/rpn/code-tools/ENV/cdt-1.6.6/ECCC/inteloneapi-2022.1.2
 
 /fs/ssm/eccc/mrd/rpn/MIG/ENV/sep
 
-/fs/ssm/eccc/mrd/rpn/libs/20230531
-/fs/ssm/eccc/cmd/cmda/libs/20230531/inteloneapi-2022.1.2
+/fs/ssm/eccc/mrd/rpn/libs/20230906
+/fs/ssm/eccc/cmd/cmda/libs/20230906/inteloneapi-2022.1.2
 
-/fs/ssm/eccc/cmo/cmoi/base/20230316
+/fs/ssm/eccc/cmo/cmoi/base/20230807
