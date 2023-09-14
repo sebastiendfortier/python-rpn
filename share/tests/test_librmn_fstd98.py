@@ -373,8 +373,8 @@ class Librmn_fstd98_Test(unittest.TestCase):
         rmn.fstcloseall(funit)
         self.erase_testfile()
         self.assertNotEqual(lo,None,'QW not found after rename: '+repr(klo))
-        self.assertNotEqual(la['etiket'],'MY_NEW_ETK')
-        self.assertNotEqual(lo['etiket'],'MY_NEW_ETK')
+        self.assertEqual(la['etiket'],'MY_NEW_ETK')
+        self.assertEqual(lo['etiket'],'MY_NEW_ETK')
 
 
     def test_fsteff_list_rec(self):

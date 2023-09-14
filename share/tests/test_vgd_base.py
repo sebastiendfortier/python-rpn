@@ -1,12 +1,19 @@
 #!/usr/bin/env python
 
-import os
+import inspect
+import os, sys
 import datetime
 import unittest
 import ctypes as ct
 import numpy as np
 import rpnpy.vgd.all as vgd
 import rpnpy.librmn.all as rmn
+
+
+def _printName():
+    pass
+    ## print('{}\n'.format(inspect.stack()[1][3]))
+    ## sys.stderr.write('{}\n'.format(inspect.stack()[1][3]))
 
 class VGDBaseTests(unittest.TestCase):
 
@@ -29,6 +36,7 @@ class VGDBaseTests(unittest.TestCase):
         return vgd0ptr
 
     def testGetPutOptInt(self):
+        _printName()
         v1 = vgd.vgd_get_opt('ALLOW_SIGMA')
         self.assertEqual(v1,vgd.VGD_DISALLOW_SIGMA)
         vgd.vgd_put_opt('ALLOW_SIGMA', vgd.VGD_ALLOW_SIGMA)
@@ -37,11 +45,13 @@ class VGDBaseTests(unittest.TestCase):
         vgd.vgd_put_opt('ALLOW_SIGMA',vgd.VGD_DISALLOW_SIGMA)
 
     def testNewRead(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
         ## self.assertEqual(vgd0ptr[0].kind,vgd.VGD_HYB_KIND)
         ## self.assertEqual(vgd0ptr[0].version,vgd.VGD_HYB_VER)
 
     def testNewReadGetInt(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         vkind = vgd.vgd_get(vgd0ptr, 'KIND')
@@ -58,15 +68,19 @@ class VGDBaseTests(unittest.TestCase):
             self.assertEqual(0,1,'vgd_get of Unknown key should raise a KeyError')
 
     def testNewReadGetFloat(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         v1 = vgd.vgd_get(vgd0ptr, 'RC_1')
         self.assertEqual(int(v1*100),160)
 
+        rmn.Lib_LogLevelNo(rmn.APP_LIBVGRID, rmn.APP_ERROR)
         v2 = vgd.vgd_get(vgd0ptr, 'RC_2')
+        rmn.Lib_LogLevelNo(rmn.APP_LIBVGRID, rmn.APP_WARNING)
         self.assertEqual(int(v2),vgd.VGD_MISSING)
 
     def testNewReadGetDouble(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         v1 = vgd.vgd_get(vgd0ptr, 'PREF')
@@ -76,12 +90,14 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual(int(v2*100.),1000)
 
     def testNewReadGetChar(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         v1 = vgd.vgd_get(vgd0ptr, 'RFLD')
         self.assertEqual(v1.strip(),'P0')
 
     def testNewReadGetInt1D(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         v1 = vgd.vgd_get(vgd0ptr, 'VIPM')
@@ -89,6 +105,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual(v1[0:3],[97642568, 97690568, 97738568])
 
     def testNewReadGetFloat1D(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         v1 = vgd.vgd_get(vgd0ptr, 'VCDM')
@@ -96,6 +113,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual([int(x*10000000) for x in v1[0:3]],[1250, 1729, 2209])
 
     def testNewReadGetDouble1D(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         v1 = vgd.vgd_get(vgd0ptr, 'CA_M')
@@ -105,6 +123,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual(int(v1[2]*100.),1765)
 
     def testNewReadGetDouble3D(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         v1 = vgd.vgd_get(vgd0ptr, 'VTBL')
@@ -112,6 +131,7 @@ class VGDBaseTests(unittest.TestCase):
                          [500, 100, 300, 1000, 8000000, 160, 0, 0, 0])
 
     def testNewReadPutChar(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         v1 = 'PRES'
@@ -120,6 +140,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual(v2.strip(),v1)
 
     def testNewReadPutInt(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         v1 = 6
@@ -136,17 +157,21 @@ class VGDBaseTests(unittest.TestCase):
     ##     self.assertEqual(int(v2*100.),int(v1*100.))
 
     def testFree(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         vgd.vgd_free(vgd0ptr)
         try:
+            rmn.Lib_LogLevelNo(rmn.APP_LIBVGRID, rmn.APP_SYSTEM)
             v1 = vgd.vgd_get(vgd0ptr, 'RFLD')
         except vgd.VGDError:
             pass
         except:
             self.assertEqual(0,1,'vgd_get of freed vgd should raise a VGDError')
+        rmn.Lib_LogLevelNo(rmn.APP_LIBVGRID, rmn.APP_WARNING)
 
     def testCmp(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
         vgd1ptr = self._newReadBcmk()
 
@@ -165,6 +190,7 @@ class VGDBaseTests(unittest.TestCase):
             pass
 
     def testWriteDesc(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
 
         self._erase_testfile()
@@ -197,6 +223,7 @@ class VGDBaseTests(unittest.TestCase):
     MB2PA = 100.
 
     def testNewSigm(self):
+        _printName()
         vgd.vgd_put_opt('ALLOW_SIGMA', vgd.VGD_ALLOW_SIGMA)
         sigma = (0.011000, 0.027000, 0.051000, 0.075000, 0.101000, 0.127000,
                  0.155000, 0.185000, 0.219000, 0.258000, 0.302000, 0.351000,
@@ -210,6 +237,7 @@ class VGDBaseTests(unittest.TestCase):
         vgd.vgd_put_opt('ALLOW_SIGMA', vgd.VGD_DISALLOW_SIGMA)
 
     def testNewPres(self):
+        _printName()
         # pres = [x*self.MB2PA for x in (500.,850.,1000.)]
         pres = (500.,850.,1000.)
         vgd0ptr = vgd.vgd_new_pres(pres)
@@ -218,6 +246,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual((vkind,vvers), vgd.VGD_KIND_VER['pres'])
 
     def testNewEta(self):
+        _printName()
         hyb = (0.000,   0.011,    0.027,    0.051,    0.075,
                0.101,   0.127,    0.155,    0.185,    0.219,
                0.258,   0.302,    0.351,    0.405,    0.460,
@@ -240,6 +269,7 @@ class VGDBaseTests(unittest.TestCase):
     ##     self.assertEqual((vkind,vvers), vgd.VGD_KIND_VER['hybn'])
 
     def testNewHyb(self):
+        _printName()
         hyb =(0.0125000,0.0233625,0.0391625,0.0628625,0.0865625,
               0.1122375,0.1379125,0.1655625,0.1951875,0.2287625,
               0.2672750,0.3107250,0.3591125,0.4124375,0.4667500,
@@ -255,6 +285,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual((vkind,vvers), vgd.VGD_KIND_VER['hyb'])
 
     def testNewHybS(self):
+        _printName()
         rcoef1 = 0.
         rcoef2 = 10.
         ptop = 8.05 * self.MB2PA
@@ -265,6 +296,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual((vkind,vvers), vgd.VGD_KIND_VER['hybs'])
 
     def testNewHybT(self):
+        _printName()
         rcoef1 = 0.
         rcoef2 = 10.
         ptop = 10. * self.MB2PA
@@ -275,6 +307,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual((vkind,vvers), vgd.VGD_KIND_VER['hybt'])
 
     def testNewHybM(self):
+        _printName()
         rcoef1 = 0.
         rcoef2 = 1.
         pref = 1000. * self.MB2PA
@@ -285,6 +318,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual((vkind,vvers), vgd.VGD_KIND_VER['hybm'])
 
     def testNewHybMD(self):
+        _printName()
         rcoef1 = 0.
         rcoef2 = 10.
         pref = 1000. * self.MB2PA
@@ -298,6 +332,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual((vkind,vvers), vgd.VGD_KIND_VER['hybmd'])
 
     def testNewHybPs(self):
+        _printName()
         rcoef1 = 0.
         rcoef2 = 5.
         rcoef3 = 0.
@@ -314,6 +349,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual((vkind,vvers), vgd.VGD_KIND_VER['hybps'])
 
     def testNewHybH(self):
+        _printName()
         rcoef1 = 1.
         rcoef2 = 5.
         dhm = 10.
@@ -326,6 +362,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual((vkind,vvers),vgd.VGD_KIND_VER['hybh'])
 
     def testNewHybHs(self):
+        _printName()
         rcoef1 = 0.
         rcoef2 = 5.
         rcoef3 = 0.
@@ -340,6 +377,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual((vkind,vvers), vgd.VGD_KIND_VER['hybh'])
 
     def testNewHybHl(self):
+        _printName()
         rcoef1 = 1.
         rcoef2 = 5.
         dhm = 10.
@@ -353,6 +391,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual((vkind,vvers), vgd.VGD_KIND_VER['hybhl'])
 
     def testNewHybHls(self):
+        _printName()
         rcoef1 = 0.
         rcoef2 = 5.
         rcoef3 = 0.
@@ -423,6 +462,7 @@ class VGDBaseTests(unittest.TestCase):
     ##     self.assertEqual(vvers.value,vgd.VGD_HYBS_VER)
 
     def testNewFromTable(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
         vgdtbl  = vgd.vgd_tolist(vgd0ptr)
         vgd1ptr = vgd.vgd_fromlist(vgdtbl)
@@ -430,6 +470,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertTrue(ok)
 
     def testNewCopy(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
         vgd1ptr = vgd.vgd_copy(vgd0ptr)
         ok = vgd.vgd_cmp(vgd0ptr,vgd1ptr)
@@ -440,6 +481,7 @@ class VGDBaseTests(unittest.TestCase):
 
 
     def testLevels_prof(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
         MB2PA = 100.
         p0_stn_mb = 1013.  * MB2PA
@@ -450,6 +492,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual(prof.dtype,np.float32)
 
     def testLevels8_prof(self):
+        _printName()
         vgd0ptr = self._newReadBcmk()
         MB2PA = 100.
         p0_stn_mb = 1013.  * MB2PA
@@ -460,6 +503,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual(prof.dtype,np.float64)
 
     def testLevels_prof_21001_SLEVE(self):
+        _printName()
         vgd0ptr = self._newReadBcmk(vcode_name="21001_SLEVE")
         me = 33.
         mels = 11.
@@ -472,6 +516,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual(prof.dtype,np.float32)
 
     def testLevels_prof_21001_SLEVE_error_in_flds_size(self):
+        _printName()
         vgd0ptr = self._newReadBcmk(vcode_name="21001_SLEVE")
         me = 33.
         mels = [11., 12]
@@ -479,12 +524,14 @@ class VGDBaseTests(unittest.TestCase):
             prof = vgd.vgd_levels2(vgd0ptr, me, mels, in_log=0)
 
     def testLevels_prof_21001_SLEVE_flds_missing(self):
+        _printName()
         vgd0ptr = self._newReadBcmk(vcode_name="21001_SLEVE")
         me = 33.
         with self.assertRaises(Exception):
             prof = vgd.vgd_levels2(vgd0ptr, me, in_log=0)
 
     def testLevels_prof_21002_SLEVE(self):
+        _printName()
         vgd0ptr = self._newReadBcmk(vcode_name="21002_SLEVE")
         me = 33.
         mels = 11.
@@ -497,26 +544,31 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual(prof.dtype,np.float32)
 
     def testLevels_prof_pressure(self):
+        _printName()
         vgd0ptr = self._newReadBcmk(vcode_name="pressure")
         prof = vgd.vgd_levels2(vgd0ptr, ip1list='VIPW', in_log=0)
         prof_ctrl = [1013.25, 9119.25, 35666.3984375, 81060.]
-        for i in range(len(prof)):
-            self.assertAlmostEqual(prof[i], prof_ctrl[i], 5)
+        print('pr {}\n'.format(prof))
         self.assertEqual(len(prof.shape),1)
         self.assertEqual(prof.dtype,np.float32)
+        for i in range(len(prof)):
+            self.assertAlmostEqual(prof[i], prof_ctrl[i], 5)
 
     def testLevels_prof_4001(self):
+        _printName()
         vgd0ptr = self._newReadBcmk(vcode_name="4001")
         prof = vgd.vgd_levels2(vgd0ptr, ip1list='VIPW')
         prof_ctrl = [1842.78442383, 7987.36328125, 16765.00390625,
                      30968.12304688]
-        for i in range(len(prof)):
-            self.assertAlmostEqual(prof[i], prof_ctrl[i], 5)
+        print('pr4 {}\n'.format(prof))
         self.assertEqual(len(prof.shape),1)
         self.assertEqual(prof.dtype,np.float32)
+        for i in range(len(prof)):
+            self.assertAlmostEqual(prof[i], prof_ctrl[i], 5)
 
     ## def testLevels_3d(self):
     def testDiag_withref_3d(self):
+        _printName()
         ATM_MODEL_DFILES = os.getenv('ATM_MODEL_DFILES').strip()
         fileName = os.path.join(ATM_MODEL_DFILES,'bcmk_toctoc','2009042700_000')
         fileId = rmn.fstopenall(fileName, rmn.FST_RO)
@@ -531,6 +583,7 @@ class VGDBaseTests(unittest.TestCase):
 
     ## def testLevels8_3d(self):
     def testDiag_withref8_3d(self):
+        _printName()
         ATM_MODEL_DFILES = os.getenv('ATM_MODEL_DFILES').strip()
         fileName = os.path.join(ATM_MODEL_DFILES,'bcmk_toctoc','2009042700_000')
         fileId = rmn.fstopenall(fileName, rmn.FST_RO)
@@ -544,6 +597,7 @@ class VGDBaseTests(unittest.TestCase):
         self.assertEqual(levels8.dtype,np.float64)
 
     def testSdta76_temp(self):
+        _printName()
         vgd0ptr = self._newReadBcmk(vcode_name="21002_SLEVE")
         temp = vgd.vgd_stda76_temp(vgd0ptr)
         np.testing.assert_almost_equal(temp,
@@ -564,6 +618,7 @@ class VGDBaseTests(unittest.TestCase):
 
 
     def testSdta76_pres(self):
+        _printName()
         vgd0ptr = self._newReadBcmk(vcode_name="21002_SLEVE")
         pres = vgd.vgd_stda76_pres(vgd0ptr)
         np.testing.assert_almost_equal(pres,
@@ -590,6 +645,7 @@ class VGDBaseTests(unittest.TestCase):
             [1000., 9000.00097656, 35200., 80000., 100000., 99881.5], decimal=6)
 
     def testStda76_hgts_from_pres_list(self):
+        _printName()
         pres = (105000., 95005.25, 5813.071777, 20104.253906, 10.)
         sol  = (-301.530579, 539.898010, 19620.611328, 11751.479492,
                 64949.402344)
@@ -597,6 +653,7 @@ class VGDBaseTests(unittest.TestCase):
         np.testing.assert_almost_equal(hgts, sol, decimal=6)
 
     def testStda76_pres_from_hgts_list(self):
+        _printName()
         sol  =  np.asarray((105000., 95005.25, 5813.071777, 20104.253906, 10.),
                            dtype=np.float32)
         hgts = (-301.530579, 539.898010, 19620.611328, 11751.479492,
@@ -605,6 +662,7 @@ class VGDBaseTests(unittest.TestCase):
         np.testing.assert_almost_equal(sol/pres, sol*0.+1., decimal=6)
 
     def testPrint_desc(self):
+        _printName()
         my_vgd = self._newReadBcmk(vcode_name="21002_SLEVE")
         vgd.vgd_print_desc(my_vgd, 1)
 

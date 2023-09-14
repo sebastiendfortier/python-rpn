@@ -511,7 +511,7 @@ def getIgTags(params):
                       params['dlat'], params['dlon']])
         elif all([x in params.keys() for x in ('pi', 'pj', 'dgrw')]):
             a.extend([params['pi'], params['pj'], params['dgrw']])
-    a = [int(x*1000.) for x in a]
+    a = [int(abs(x)*1000.) for x in a]
     aa = _np.array(a, dtype=_np.uint32)
     crc = _rb.crc32(0, aa)
     return (

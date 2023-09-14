@@ -321,9 +321,12 @@ def mrfopt(name, value=None):
 
     if value is None:
         if name == _rbc.BURPOP_MSGLVL:
-            value = _C_MKSTR(' '*_rbc.BURP_OPTC_STRLEN)
-            istat = _rp.c_mrfgoc(_C_WCHAR2CHAR(name), value)
-            value = _C_CHAR2WCHAR(value.value).strip()
+            value = ''
+            istat = 0
+            sys.stderr.write('WARNING: mrfopt BURPOP_MSGLVL deprecated in librmn\n')
+            ## value = _C_MKSTR(' '*_rbc.BURP_OPTC_STRLEN)
+            ## istat = _rp.c_mrfgoc(_C_WCHAR2CHAR(name), value)
+            ## value = _C_CHAR2WCHAR(value.value).strip()
         else:
             value = _ct.c_float(0.)
             istat = _rp.c_mrfgor(_C_WCHAR2CHAR(name), _ct.byref(value))
@@ -1767,12 +1770,23 @@ def _mrbcvt_dict_full_init():
                 'e_bufrid_Y': int(item[3:6]),
                 'e_cvt'     : 1,
                 'e_desc'    : item[8:51].strip(),
-                'e_units'   : item[52:63].strip(),
-                'e_scale'   : int(item[63:66]),
-                'e_bias'    : int(item[66:77]),
+                'e_units'   : item[52:63],
+                'e_scale'   : item[64:66],
+                'e_bias'    : item[67:77],
                 'e_nbits'   : int(item[77:83]),
                 'e_multi'   : 0
                 }
+            if item[63] == '-':
+                d['e_scale'] = '-' + d['e_scale']
+            else:
+                d['e_units'] = d['e_units'] + item[63]
+            if item[66] == '-':
+                d['e_bias'] = '-' + d['e_bias']
+            else:
+                d['e_scale'] = d['e_scale'] + item[66]
+            d['e_units'] = d['e_units'].strip()
+            d['e_scale'] = int(d['e_scale'])
+            d['e_bias'] = int(d['e_bias'])
             if item[50] == '*':
                 d['e_cvt'] = 0
                 d['e_desc'] = item[8:50].strip()
@@ -1787,6 +1801,8 @@ def _mrbcvt_dict_full_init():
                 hasError = True
                 sys.stderr.write("WARNING: mrbcvt_dict_full_init - problem decoding line in file: {}\n".format(mypath))
             sys.stderr.write("WARNING, offending line: {}\n".format(item.strip()))
+            # sys.stderr.write("WARNING Values::{}:{}:{}:\n".format(item[52:63],item[64:66],item[66:77]))
+
             if _mrbcvt_dict['raise']:
                 raise
     _mrbcvt_dict['init'] = True

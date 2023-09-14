@@ -219,20 +219,20 @@ bdesc  ={bdesc:6d}  btyp   ={btyp:6d}  nbit   ={nbit:6d}  datyp  ={datyp:6d}  bf
                                          format(k+1, br.nt))
                         mystr = "lstele ="
                         for i in range(br.nele):
-                            mystr += "    {:0>6d}".format(np.asscalar(br.dlstele[i]))
+                            mystr += "    {:0>6d}".format(br.dlstele[i].item())
                         logfid.write(mystr+"\n")
                         for j in range(br.nval):
                             mystr = "tblval = {} {} {}".format(rr.stnid,k,j)
                             for i in range(br.nele):
-                                mystr += "{:10d}".format(np.asscalar(br.tblval[i,j,k]))
+                                mystr += "{:10d}".format(br.tblval[i,j,k].item())
                                 ## a = brp.BLK_TBLVAL(brptr,i,j,k)
-                                ## b = np.asscalar(br.tblval[i,j,k])
+                                ## b = br.tblval[i,j,k].item()
                                 ## mystr += "{:10d}".format(a)
                                 ## mystr += "{:10d}".format(b)
                                 ## mystr += "[{}]".format(a==b)
                                 ## brp.BLK_SetTBLVAL(br.getptr(),i,j,k,n)
                                 ## a = brp.BLK_TBLVAL(brptr,i,j,k)
-                                ## b = np.asscalar(br.tblval[i,j,k])
+                                ## b = br.tblval[i,j,k].item()
                                 ## mystr += "{:10d}".format(a)
                                 ## mystr += "{:10d}".format(b)
                                 ## mystr += "[{}]".format(a==b)
@@ -1004,13 +1004,13 @@ bdesc  ={:6d}  btyp   ={:6d}  nbit   ={:6d}  datyp  ={:6d}  bfam   ={:6d}
                         print("\nobservation {}/{}".format(k+1, br.nt))
                     mystr = "lstele ="
                     for i in range(br.nele):
-                        mystr += "    {:0>6d}".format(np.asscalar(br.dlstele[i]))
+                        mystr += "    {:0>6d}".format(br.dlstele[i].item())
                     print(mystr)
                     for j in range(br.nval):
                         mystr = "tblval ="
                         for i in range(br.nele):
-                            ## mystr += "{:10d}".format(np.asscalar(br.tblval[i,j,k]))
-                            mystr += "{:10d}".format(np.asscalar(br.tblval[i,j,k]))
+                            ## mystr += "{:10d}".format(br.tblval[i,j,k].item())
+                            mystr += "{:10d}".format(br.tblval[i,j,k].item())
                         print(mystr)
 
         del bfile
