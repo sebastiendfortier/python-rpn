@@ -439,6 +439,8 @@ def cxgaig(grtyp, xg1, xg2=0., xg3=0., xg4=0.):
     return (cig1.value, cig2.value, cig3.value, cig4.value)
 
 
+_isCMCDateValid = lambda idate: idate != -1
+
 def incdatr(idate, nhours):
     """
     Increase idate by nhours
@@ -474,7 +476,7 @@ def incdatr(idate, nhours):
     if not isinstance(idate, _integer_types):
         raise TypeError("incdatr: Expecting idate of type int, Got {0} : {1}"\
                         .format(type(idate), repr(idate)))
-    if idate < 0:
+    if not _isCMCDateValid(idate):
         raise ValueError("incdatr: must provide a valid idate: {0}".format(idate))
     if isinstance(nhours, _integer_types):
         nhours = float(nhours)
@@ -526,7 +528,7 @@ def difdatr(idate1, idate2):
             isinstance(idate2, _integer_types)):
         raise TypeError("difdatr: Expecting idate1, 2 of type int, " +
                         "Got {0}, {1}".format(type(idate1), type(idate2)))
-    if idate1 < 0 or idate2 < 0:
+    if not (_isCMCDateValid(idate1) and _isCMCDateValid(idate2)):
         raise ValueError("difdatr: must provide a valid idates: {0}, {1}"\
                          .format(idate1, idate2))
     (cidate1, cidate2, cnhours) = (_ct.c_int(idate1), _ct.c_int(idate2),
@@ -813,7 +815,7 @@ def newdate(imode, idate1, idate2=0):
                             "Got type={0}, len={1}".format(type(idate1), len(idate1)))
 
     if not isinstance(idate1, (list, tuple)):
-        if idate1 < 0 or idate2 < 0:
+        if not (_isCMCDateValid(idate1) and _isCMCDateValid(idate2)):
             raise ValueError("newdate: must provide a valid idates: {0}, {1}"\
                              .format(idate1, idate2))
     cimode = _ct.c_int(imode)
