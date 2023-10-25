@@ -70,7 +70,87 @@ def sort_ip1(ip1s):
     return ip1s
 
 
-#TODO: should also get rfls if needed
+def get_rfl_data(fileId, rfldName, 
+                 datev=-1, ip2=-1, ip3=-1, typvar=' ', etiket=' ',
+                 verbose=False):
+    """
+    Read a reference surface field
+
+    rfd = get_rfl_data(fileId, nomvar,
+                       datev, ip2, ip3, typvar, etiket)
+
+    Args:
+        fileId  : unit number associated to the file
+                  obtained with fnom+fstouv
+        rfldName: name of the REF_FLD as returned by vgd_get(vptr, 'RFLD')
+        datev   : valid date
+        ip2     : forecast hour
+        ip3     : user defined identifier
+        typvar  : type of field
+        etiket  : label
+        verbose : Print some info when true
+    Returns:
+        'rfld' : rfld
+        None
+        }
+    Raises:
+        TypeError  on wrong input arg types
+        ValueError on invalid input arg value
+        FSTDError  on any other error
+
+    Examples:
+    >>> import os, os.path
+    >>> import rpnpy.librmn.all as rmn
+    >>> import rpnpy.vgd.all as vgd
+    >>> import rpnpy.utils.all as utl
+    >>>
+    >>> ATM_MODEL_DFILES = os.getenv('ATM_MODEL_DFILES').strip()
+    >>> filename = os.path.join(ATM_MODEL_DFILES,'bcmk')
+    >>>
+    >>> # Open existing file in Rear Only mode
+    >>> fileId = rmn.fstopenall(filename, rmn.FST_RO)
+    >>>
+    >>> # Get the pressure cube
+    >>> ipkeys  = utl.fstd3d.get_levels_keys(fileId, 'TT', thermoMom='VIPT')
+    >>> ip1list = [ip1 for ip1,key in ipkeys['ip1keys']]
+    >>> rfldName = vgd.vgd_get(ipkeys['vptr'], 'RFLD')
+    >>> rfld     = utl.get_rfl_data(fileId, rfldName)
+    >>> # print('# {}'.format(rfld.shape)
+    >>> rmn.fstcloseall(fileId)
+
+    See Also:
+        get_levels_keys
+        fst_read_3d
+        rpnpy.librmn.fstd98.fstlir
+        rpnpy.librmn.fstd98.fstprm
+        rpnpy.librmn.fstd98.fstluk
+        rpnpy.librmn.fstd98.fstopenall
+        rpnpy.librmn.fstd98.fstcloseall
+        rpnpy.vgd.base.vgd_levels
+    """
+    if rfldName:
+        r2d = _rmn.fstlir(fileId, nomvar=rfldName, datev=datev, ip2=ip2,
+                          ip3=ip3, typvar=typvar, etiket=etiket)
+        if r2d is None:
+            r2d = _rmn.fstlir(fileId, nomvar=rfldName, datev=datev, ip2=ip2,
+                             typvar=typvar, etiket=etiket)
+        if r2d is None:
+            r2d = _rmn.fstlir(fileId, nomvar=rfldName, datev=datev, ip2=ip2,
+                             etiket=etiket)
+        if r2d is None:
+            r2d = _rmn.fstlir(fileId, nomvar=rfldName, datev=datev, ip2=ip2)
+        if r2d is None:
+            r2d = _rmn.fstlir(fileId, nomvar=rfldName, datev=datev)
+        if r2d is None:
+            r2d = _rmn.fstlir(fileId, nomvar=rfldName)
+        if not r2d is None:
+            if verbose:
+                print("Read {nomvar} ip1={ip1} ip2={ip2} ip3={ip3} typv={typvar} etk={etiket}".format(**r2d))
+        return r2d
+    else:
+        return None
+
+
 #TODO: skip phPa if not a press coor
 def get_levels_press(fileId, vptr, shape, ip1list,
                      datev=-1, ip2=-1, ip3=-1, typvar=' ', etiket=' ',
@@ -135,40 +215,30 @@ def get_levels_press(fileId, vptr, shape, ip1list,
         rpnpy.librmn.fstd98.fstcloseall
         rpnpy.vgd.base.vgd_levels
     """
-    rfldName = _vgd.vgd_get(vptr, 'RFLD')
+    try:
+        rfldName = _vgd.vgd_get(vptr, 'RFLD')
+    except:
+        rfldName = None
     rfld     = _np.empty(shape, dtype=_np.float32, order='F')
     rfld[:]  = 1000. * _cst.MB2PA
-    if rfldName:
-        r2d = _rmn.fstlir(fileId, nomvar=rfldName, datev=datev, ip2=ip2,
-                          ip3=ip3, typvar=typvar, etiket=etiket)
-        if r2d is None:
-            r2d = _rmn.fstlir(fileId, nomvar=rfldName, datev=datev, ip2=ip2,
-                             typvar=typvar, etiket=etiket)
-        if r2d is None:
-            r2d = _rmn.fstlir(fileId, nomvar=rfldName, datev=datev, ip2=ip2,
-                             etiket=etiket)
-        if r2d is None:
-            r2d = _rmn.fstlir(fileId, nomvar=rfldName, datev=datev, ip2=ip2)
-        if r2d is None:
-            r2d = _rmn.fstlir(fileId, nomvar=rfldName, datev=datev)
-        if r2d is None:
-            r2d = _rmn.fstlir(fileId, nomvar=rfldName)
-        if not r2d is None:
-            if verbose:
-                print("Read {nomvar} ip1={ip1} ip2={ip2} ip3={ip3} typv={typvar} etk={etiket}".format(**r2d))
-            ## g = _rmn.readGrid(fileId, r2d)
-            ## if len(xpts) > 0:
-            ##     v1 = _rmn.gdxysval(g['id'], xpts, ypts, r2d['d'])
-            ##     rfld[0:len(xy)] = v1[:]
-            ## if len(lats) > 0:
-            ##     v1 = _rmn.gdllsval(g['id'], lats, lons, r2d['d'])
-            ##     rfld[len(xy):len(xy)+len(ll)] = v1[:]
-            rfld[:, :] = r2d['d'][:, :] * _cst.MB2PA
-    #TODO: use vgd_leves2 with rfls
-    phPa = _vgd.vgd_levels(vptr, rfld, ip1list)
+    r2d = get_rfl_data(fileId, rfldName, datev, ip2, ip3,
+                       typvar, etiket, verbose)
+    if not r2d is None:
+        rfld[:, :] = r2d['d'][:, :] * _cst.MB2PA
+    try:
+        rfldName = _vgd.vgd_get(vptr, 'RFLS')
+    except:
+        rfldName = None
+    rfls = None
+    r2d = get_rfl_data(fileId, rfldName, datev, ip2, ip3,
+                       typvar, etiket, verbose)
+    if not r2d is None:
+        rfls = r2d['d'][:, :] * _cst.MB2PA    
+    phPa = _vgd.vgd_levels2(vptr, rfld, rfls, ip1list)
     phPa[:, :, :] /= _cst.MB2PA
     return {
         'rfld' : rfld,
+        'rfls' : rfls,
         'phPa' : phPa
         }
 
