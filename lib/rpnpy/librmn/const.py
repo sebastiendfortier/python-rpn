@@ -33,6 +33,7 @@ import numpy  as _np
 #<source lang=python>
 ## Python dict with wkoffit file type codes
 WKOFFIT_TYPE_LIST = {
+    'CORROMPU' : -4,
     'INEXISTANT' : -3,
     'VIDE' : -2,
     'INCONNU' : -1,
@@ -70,7 +71,13 @@ WKOFFIT_TYPE_LIST = {
     'BMP' : 32,
     'STANDARD RANDOM 98' : 33,
     'STANDARD SEQUENTIEL 98' : 34,
-    'NETCDF' : 35
+    'NETCDF' : 35,
+    'CMCARC4' : 36,
+    'CMCARC5' : 37,
+    'HDF5' : 38,
+    'STDRSF' : 39,
+    'RSF' : 40,
+    'SQLITE3' : 41
     }
 
 WKOFFIT_TYPE_LIST_INV = dict([(v, k) for k, v in WKOFFIT_TYPE_LIST.items()])
