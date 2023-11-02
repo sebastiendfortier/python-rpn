@@ -106,7 +106,10 @@ def get_level_str(ip1, ip2, ip3):
         (rp1, rp2, rp3) = rmn.DecodeIp(ip1, ip2, ip3)
         units = rmn.kindToString(rp1.kind)
         if rp1.v1 == rp1.v2:
-            level = "%6f%s" % (rp1.v1,units)
+            format = "%6f%s"
+            if units in ('sg', 'hy', 'mb'): format = "%6.4f%s"
+            level = format % (rp1.v1,units)
+            level = level.lstrip("0")
         else:
             level = '['+str(rp1.v1)+' - '+str(rp1.v1)+'] '+units
     except:
@@ -114,9 +117,94 @@ def get_level_str(ip1, ip2, ip3):
     return level
 
 
-def plot_series(varlist, title=None, axename=None):
+def plot_series_theme(varlist, title=None, axename=None, theme="darkgrid"):
     """
     """
+    import pandas as pd
+    import seaborn as sns
+    ## import seaborn.objects as so
+
+    etklist = sorted(set([var['etiket'] for var in varlist]))
+    keep_etk = (len(etklist) > 1)
+    #TODO: keep_name (or in title)
+    #TODO: keep ll/xx (or in title)
+    #TODO: keep coor (or in title)
+    
+    datadict = {
+        'Time' : None,
+        }
+
+    #TODO: group levels, group vars
+    for var in varlist:
+        (nomvar, ip1, xy, ll, d, hrs, etk) = \
+            (var['nomvar'], var['ip1'], var['xy'], var['ll'], var['d'],
+             var['hrs'], var['etiket'])
+        level = get_level_str(var['ip1'], var['ip2'], var['ip3'])
+        for istat in range(len(xy)):
+            if datadict['Time'] is None:
+                datadict['Time'] = hrs
+            (i,j) = xy[istat]
+            if keep_etk:
+                label = "%s (%6.1f,%6.1f, %s) %12s" % (nomvar,i,j, level, etk)
+            else:
+                label = "%s (%6.1f,%6.1f, %s)" % (nomvar,i,j, level)
+            datadict[label] = d[istat,:]
+        for istat in range(len(ll)):
+            if datadict['Time'] is None:
+                datadict['Time'] = hrs
+            (i,j) = ll[istat]
+            y = d[len(xy)+istat,:]
+            if keep_etk:
+                label = "%s (%6.1f,%6.1f, %s) %12s" % (nomvar,i,j, level, etk)
+            else:
+                label = "%s (%6.1f,%6.1f, %s)" % (nomvar,i,j, level)
+            datadict[label] = d[len(xy)+istat,:]
+    data = pd.DataFrame(datadict)
+    data.set_index('Time')
+    data2 = pd.melt(data, ['Time'],
+                    var_name='var', value_name='value')
+
+    custom = {"axes.edgecolor": "red", "grid.linestyle": "dashed", "grid.color": "black"}
+    sns.set_theme(context="paper", style=theme, font_scale=0.9) #paper, notebook, talk, poster
+    
+    sns.lineplot(data2, x='Time', y='value', hue='var', style='var', sort=False)
+    
+    ## sns.relplot(
+    ##   data=data2, kind="line",
+    ##   x='Time', y='value',
+    ##   style='var', hue='var'
+    ##   #facet_kws=dict(sharex=False)
+    ## )
+
+    ## p = so.Plot(data2, x='Time', y='value', group='var')
+    ## p.add(so.Line())
+    
+    #TODO: get full name and units from dict
+    if title is None:
+        title = 'Time Serie of: %s' % varlist[0]['nomvar']
+    plt.title(title)
+    if axename is None:
+        axename = varlist[0]['nomvar']
+    plt.ylabel(axename)        
+    plt.xlabel('Time: %s + H' % str(RPNDate(varlist[0]['dateo'])))
+    hrsmin = min(varlist[0]['hrs'])
+    hrsmax = max(varlist[0]['hrs'])+1
+    for dt in (0.25, 0.5, 1, 3, 6, 12, 24, 48, 96, 120):
+        ticks = np.arange(hrsmin, hrsmax, dt)
+        if len(ticks) < 10:
+            break
+    plt.xticks(ticks)
+    sns.despine() #trim=True)
+    # plt.savefig('name.png')
+    plt.show()
+
+
+def plot_series_plt(varlist, title=None, axename=None):
+    """
+    """
+    etklist = sorted(set([var['etiket'] for var in varlist]))
+    keep_etk = (len(etklist) > 1)
+
     #TODO: get full name and units from dict
     if title is None:
         title = 'Time Serie of: %s' % varlist[0]['nomvar']
@@ -130,8 +218,6 @@ def plot_series(varlist, title=None, axename=None):
     markers = ('-', '-.', '--', ':')
     imark   = 0
     for var in varlist:
-        if var is None:
-            continue
         (nomvar, ip1, xy, ll, d, hrs, etk) = \
             (var['nomvar'], var['ip1'], var['xy'], var['ll'], var['d'],
              var['hrs'], var['etiket'])
@@ -140,17 +226,31 @@ def plot_series(varlist, title=None, axename=None):
         for istat in range(len(xy)):
             (i,j) = xy[istat]
             y = d[istat,:]
-            plt.plot(hrs, y, markers[imark], label="%s xy:(%6.1f,%6.1f, %s) %12s" % (nomvar,i,j, level, etk))        
+            if keep_etk:
+                label = "%s (%6.1f,%6.1f, %s) %12s" % (nomvar,i,j, level, etk)
+            else:
+                label = "%s (%6.1f,%6.1f, %s)" % (nomvar,i,j, level)
+            plt.plot(hrs, y, markers[imark], label=label)        
         for istat in range(len(ll)):
             (i,j) = ll[istat]
             y = d[len(xy)+istat,:]
-            plt.plot(hrs, y, markers[imark], label="%s ll:(%6.1f,%6.1f, %s) %12s" % (nomvar,i,j, level, etk))
+            if keep_etk:
+                label = "%s (%6.1f,%6.1f, %s) %12s" % (nomvar,i,j, level, etk)
+            else:
+                label = "%s (%6.1f,%6.1f, %s)" % (nomvar,i,j, level)
+            plt.plot(hrs, y, markers[imark], label=label)
         imark += 1
         if imark >= len(markers): imark=0
 
     # Tweak spacing to prevent clipping of ylabel
     #plt.subplots_adjust(left=0.15)
-    plt.xticks(np.arange(min(varlist[0]['hrs']), max(varlist[0]['hrs'])+1, 6.0))
+    hrsmin = min(varlist[0]['hrs'])
+    hrsmax = max(varlist[0]['hrs'])+1
+    for dt in (0.25, 0.5, 1, 3, 6, 12, 24, 48, 96, 120):
+        ticks = np.arange(hrsmin, hrsmax, dt)
+        if len(ticks) < 10:
+            break
+    plt.xticks(ticks)
     plt.legend(prop=font)
     plt.grid()
     plt.show()
@@ -240,11 +340,17 @@ if __name__ == "__main__":
                         help="Figure Title")
     parser.add_argument("--axe", dest="axename", default=None,
                         help="Figure Y axe name and utils")
+    parser.add_argument("--theme", dest="theme", default=None,
+                        help="Use seaborn with specified theme [darkgrid, whitegrid, dark, white, ticks]")
 
     parser.add_argument("-v", "--verbose", dest="verbose", action="store_true",
                         help="Verbose mode")
 
     args = parser.parse_args()
+
+    if args.theme not in (None, 'darkgrid', 'whitegrid', 'dark', 'white', 'ticks'):
+        sys.stderr.write('ERROR: Not a valid theme: {}\n'.format(args.theme))
+        sys.exit(1)
 
     if len(args.xy) + len(args.ll) == 0:
         sys.stderr.write("\nError: Need to provide at least one xy or ll.\n\n")
@@ -284,8 +390,12 @@ if __name__ == "__main__":
         sys.stderr.write('ERROR: Problem getting requested fields\n')
         sys.exit(1)
 
-    plot_series(varlist, args.title, args.axename)
-    
+    varlist = [var for var in varlist if var]
+    if args.theme is None:
+        plot_series_plt(varlist, args.title, args.axename)
+    else:
+        plot_series_theme(varlist, args.title, args.axename, args.theme)
+
         
 # -*- Mode: C; tab-width: 4; indent-tabs-mode: nil -*-
 # vim: set expandtab ts=4 sw=4:

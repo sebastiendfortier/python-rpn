@@ -190,9 +190,106 @@ def get_data_profile(fileId, xy, ll,
     return rec
 
 
-def plot_profile(varlist, title=None, axename=None, xzoom=None, yzoom=None, inLog=True):
+def plot_profile_theme(varlist, title=None, axename=None, xzoom=None, yzoom=None, inLog=True, theme='darkgrid'):
     """
     """
+    import pandas as pd
+    import seaborn as sns
+
+    etklist = sorted(set([var['etiket'] for var in varlist]))
+    keep_etk = (len(etklist) > 1)
+
+    data = None
+    pmin = 9999.
+    pmax = 0.
+    for var in varlist:
+        (varname, ip2, datev, xy, ll, d, pmb, etk) = \
+            (var['nomvar'], var['ip2'], var['datev'], var['xy'], var['ll'],
+             var['d'], var['pmb'], var['etiket'])
+        pmin = min(pmin, pmb.min())
+        pmax = max(pmax, pmb.max())
+        d1,d2 = rmn.newdate(rmn.NEWDATE_STAMP2PRINT, datev)
+        vdatev = "%8.8d.%4.4d" % (d1,d2/10000)
+        for istat in range(len(xy)):
+            (i,j) = xy[istat]
+            y = pmb[istat,:][::-1]
+            x = d[istat,:][::-1]
+            if keep_etk:
+                label = "%s (%6.1f,%6.1f) %s (%3dh) %12s" % \
+                    (varname,i,j, vdatev[0:12], ip2, etk)
+            else:
+                label = "%s (%6.1f,%6.1f) %s (%3dh)" % \
+                    (varname,i,j, vdatev[0:12], ip2)
+            f = pd.DataFrame({
+                 'pmb' : y,
+                 'value' : x,
+                 'var' : label
+                 })
+            if data is None:
+                data = f
+            else:
+                data = pd.concat([data, f])
+        for istat in range(len(ll)):
+            (i,j) = ll[istat]
+            y = pmb[len(xy)+istat,:][::-1]
+            x = d[len(xy)+istat,:][::-1]
+            if keep_etk:
+                label = "%s (%6.1f,%6.1f) %s (%3dh) %12s" % \
+                (varname,i,j, vdatev[0:13], ip2, etk)
+            else:
+                label = "%s (%6.1f,%6.1f) %s (%3dh)" % \
+                (varname,i,j, vdatev[0:13], ip2)
+            f = pd.DataFrame({
+                 'pmb' : y,
+                 'value' : x,
+                 'var' : label
+                 })
+            if data is None:
+                data = f
+            else:
+                data = pd.concat([data, f])
+
+    sns.set_theme(context="paper", style=theme, font_scale=0.9) #paper, notebook, talk, poster
+    
+    ax = sns.lineplot(data, x='value', y='pmb', hue='var', style='var', orient='y', sort=False)
+
+    #TODO: get full name and units from dict
+    #TODO: log or not log option
+    if title is None:
+        title = 'Profile of %s' % varlist[0]['nomvar']
+    plt.title(title)
+    if axename is None:
+        axename = varlist[0]['nomvar']
+    plt.xlabel(axename)        
+    plt.ylabel('P [hPa]')
+
+    if isinstance(yzoom, (list, tuple)):
+        if yzoom[0] is not None and yzoom[0] > pmin: pmin = yzoom[0]
+        if yzoom[1] is not None and yzoom[1] < pmax: pmax = yzoom[1]
+    # Tweak spacing to prevent clipping of ylabel
+    #plt.subplots_adjust(left=0.15)
+    #plt.xticks(np.arange(min(varlist[0]['t']), max(varlist[0]['t'])+1, 6.0))
+    ## ax = plt.gca()
+    if inLog: ax.set_yscale('log')
+    ax.set_ylim((pmax,pmin))
+    if isinstance(xzoom, (list, tuple)):
+        ax.set_xlim(xzoom)
+    ticks = [ x for x in (1000., 925., 850., 700., 500., 400., 300., 250., 200., 150., 100., 70.,50., 30., 20., 10.) if x >= pmin and x <= pmax]
+    plt.yticks(ticks)
+    ax.set_yticklabels([str(x) for x in ticks])
+    ## plt.legend(prop=font)
+    ## plt.grid()
+    sns.despine() #trim=True)
+    # plt.savefig('name.png')
+    plt.show()
+
+
+def plot_profile_plt(varlist, title=None, axename=None, xzoom=None, yzoom=None, inLog=True):
+    """
+    """
+    etklist = sorted(set([var['etiket'] for var in varlist]))
+    keep_etk = (len(etklist) > 1)
+
     #TODO: get full name and units from dict
     #TODO: log or not log option
     if title is None:
@@ -214,8 +311,6 @@ def plot_profile(varlist, title=None, axename=None, xzoom=None, yzoom=None, inLo
     pmin = 9999.
     pmax = 0.
     for var in varlist:
-        if var is None:
-            continue
         (varname, ip2, datev, xy, ll, d, pmb, etk) = \
             (var['nomvar'], var['ip2'], var['datev'], var['xy'], var['ll'],
              var['d'], var['pmb'], var['etiket'])
@@ -228,16 +323,25 @@ def plot_profile(varlist, title=None, axename=None, xzoom=None, yzoom=None, inLo
             (i,j) = xy[istat]
             y = pmb[istat,:][::-1]
             x = d[istat,:][::-1]
-            plt.plot(x, y, markers[imark],
-                     label="%s xy:(%6.1f,%6.1f) datev=%s (%3dh) %12s" %
-                     (varname,i,j, vdatev[0:12], ip2, etk))
+            
+            if keep_etk:
+                label="%s (%6.1f,%6.1f) %s (%3dh) %12s" % \
+                    (varname,i,j, vdatev[0:12], ip2, etk)
+            else:
+                label="%s (%6.1f,%6.1f) %s (%3dh)" % \
+                    (varname,i,j, vdatev[0:12], ip2)
+            plt.plot(x, y, markers[imark], label=label)
         for istat in range(len(ll)):
             (i,j) = ll[istat]
             y = pmb[len(xy)+istat,:][::-1]
             x = d[len(xy)+istat,:][::-1]
-            plt.plot(x, y, markers[imark],
-                     label="%s ll:(%6.1f,%6.1f) datev=%s (%3dh) %12s" %
-                     (varname,i,j, vdatev[0:13], ip2, etk))
+            if keep_etk:
+                label="%s (%6.1f,%6.1f) %s (%3dh) %12s" % \
+                (varname,i,j, vdatev[0:13], ip2, etk)
+            else:
+                label="%s (%6.1f,%6.1f) %s (%3dh)" % \
+                (varname,i,j, vdatev[0:13], ip2)
+            plt.plot(x, y, markers[imark], label=label)
         imark += 1
         if imark >= len(markers): imark=0
 
@@ -252,10 +356,6 @@ def plot_profile(varlist, title=None, axename=None, xzoom=None, yzoom=None, inLo
     ax.set_ylim((pmax,pmin))
     if isinstance(xzoom, (list, tuple)):
         ax.set_xlim(xzoom)
-    ## ticks = (1000., 950., 900., 850., 800., 750., 500., 250., 100., 10.)
-    ## ticks = np.arange(pmin,float(int(pmax/100.))*100.,50)
-    ## ticks = list([pmin]) + list(np.arange(100.,pmax,100))
-    ##ticks = list(np.arange(100.,pmax,100))
     ticks = [ x for x in (1000., 925., 850., 700., 500., 400., 300., 250., 200., 150., 100., 70.,50., 30., 20., 10.) if x >= pmin and x <= pmax]
     plt.yticks(ticks)
     ax.set_yticklabels([str(x) for x in ticks])
@@ -357,7 +457,14 @@ if __name__ == "__main__":
     parser.add_argument("--inlog", dest="inlog", action="store_true",
                         help="Plot with log scale on the y axis")
 
+    parser.add_argument("--theme", dest="theme", default=None,
+                        help="Use seaborn with specified theme [darkgrid, whitegrid, dark, white, ticks]")
+
     args = parser.parse_args()
+
+    if args.theme not in (None, 'darkgrid', 'whitegrid', 'dark', 'white', 'ticks'):
+        sys.stderr.write('ERROR: Not a valid theme: {}\n'.format(args.theme))
+        sys.exit(1)
 
     if len(args.xy) + len(args.ll) == 0:
         sys.stderr.write("\nError: Need to provide at least one xy or ll.\n\n")
@@ -410,8 +517,13 @@ if __name__ == "__main__":
         sys.stderr.write('ERROR: Problem getting requested fields\n')
         sys.exit(1)
 
-    plot_profile(varlist, args.title, args.axename, xzoom, yzoom, args.inlog)
-    
+
+    varlist = [var for var in varlist if var]
+    if args.theme is None:
+        plot_profile_plt(varlist, args.title, args.axename, xzoom, yzoom, args.inlog)
+    else:
+        plot_profile_theme(varlist, args.title, args.axename, xzoom, yzoom, args.inlog, args.theme)
+
         
 # -*- Mode: C; tab-width: 4; indent-tabs-mode: nil -*-
 # vim: set expandtab ts=4 sw=4:
