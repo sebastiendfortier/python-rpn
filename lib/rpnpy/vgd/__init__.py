@@ -74,6 +74,7 @@ def loadVGDlib(vgd_version=None):
        PYTHONPATH, EC_LD_LIBRARY_PATH, LD_LIBRARY_PATH
     """
     import os
+    import sys
     import ctypes as ct
     ## import numpy  as np
     ## import numpy.ctypeslib as npct
@@ -88,12 +89,14 @@ def loadVGDlib(vgd_version=None):
     else:
         vgd_libfile = 'libvgrid.so.' + VGD_VERSION.strip()
     
+    # Main system or environment (conda for example) library path
+    envlibpath  = [os.path.join(sys.prefix, 'lib')]
     pylibpath   = os.getenv('PYTHONPATH','').split(':')
     ldlibpath   = os.getenv('LD_LIBRARY_PATH','').split(':')
     eclibpath   = os.getenv('EC_LD_LIBRARY_PATH','').split()
     VGD_LIBPATH = checkVGDlibPath(vgd_libfile)
     if not VGD_LIBPATH:
-        for path in pylibpath + ldlibpath + eclibpath:
+        for path in envlibpath + pylibpath + ldlibpath + eclibpath:
             VGD_LIBPATH = checkVGDlibPath(os.path.join(path.strip(), vgd_libfile))
             if VGD_LIBPATH:
                 break

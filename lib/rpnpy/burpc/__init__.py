@@ -84,6 +84,7 @@ def load_burpc_lib(burpc_version=None):
        PYTHONPATH, EC_LD_LIBRARY_PATH, LD_LIBRARY_PATH
     """
     import os
+    import sys
     import ctypes as ct
     ## import numpy  as np
     ## import numpy.ctypeslib as npct
@@ -96,12 +97,14 @@ def load_burpc_lib(burpc_version=None):
     ## burpc_libfile = 'libburp_c_shared' + BURPC_VERSION.strip() + '.so'
     burpc_libfile = 'libburp_c_shared.so'
 
+    # Main system or environment (conda for example) library path
+    envlibpath  = [os.path.join(sys.prefix, 'lib')]
     pylibpath = os.getenv('PYTHONPATH', '').split(':')
     ldlibpath = os.getenv('LD_LIBRARY_PATH', '').split(':')
     eclibpath = os.getenv('EC_LD_LIBRARY_PATH', '').split()
     BURPC_LIBPATH = check_burpc_libpath(burpc_libfile)
     if not BURPC_LIBPATH:
-        for path in pylibpath + ldlibpath + eclibpath:
+        for path in envlibpath + pylibpath + ldlibpath + eclibpath:
             BURPC_LIBPATH = check_burpc_libpath(os.path.join(path.strip(),
                                                            burpc_libfile))
             if BURPC_LIBPATH:

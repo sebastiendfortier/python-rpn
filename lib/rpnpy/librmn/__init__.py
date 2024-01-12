@@ -78,6 +78,7 @@ def loadRMNlib(rmn_version=None):
        PYTHONPATH, EC_LD_LIBRARY_PATH, LD_LIBRARY_PATH
     """
     import os
+    import sys
     import ctypes as ct
 
     if rmn_version is None:
@@ -90,12 +91,14 @@ def loadRMNlib(rmn_version=None):
     else:
         rmn_libfile = 'librmn.so.' + RMN_VERSION.strip()
 
+    # Main system or environment (conda for example) library path
+    envlibpath  = [os.path.join(sys.prefix, 'lib')]
     pylibpath   = os.getenv('PYTHONPATH','').split(':')
     ldlibpath   = os.getenv('LD_LIBRARY_PATH','').split(':')
     eclibpath   = os.getenv('EC_LD_LIBRARY_PATH','').split()
     RMN_LIBPATH = checkRMNlibPath(rmn_libfile)
     if not RMN_LIBPATH:
-        for path in pylibpath + ldlibpath + eclibpath:
+        for path in envlibpath + pylibpath + ldlibpath + eclibpath:
             RMN_LIBPATH = checkRMNlibPath(os.path.join(path.strip(), rmn_libfile))
             if RMN_LIBPATH:
                 break
