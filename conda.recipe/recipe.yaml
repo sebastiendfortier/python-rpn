@@ -1,0 +1,45 @@
+schema_version: 1
+
+package:
+  name: eccc_rpnpy
+  version: 2.2.0
+
+source:
+  path: ../.
+
+build:
+  number: 0
+  script:
+    - python -m pip install . -vv --no-deps --no-build-isolation
+
+requirements:
+  host:
+    - python
+    - pip
+    - setuptools
+    - wheel
+    - hatchling
+
+  run:
+    - python
+    - pytz
+    - numpy
+    - scipy
+    - eccc_librmn >=20.0.3
+    - eccc_libezinterpv >=20.0.1
+    - eccc_libtdpack >=1.6.3
+    - eccc_libvgrid >=6.9.3
+    - eccc_libburpc >=1.17
+
+
+about:
+  homepage: https://github.com/sebastiendfortier/python-rpn
+  license: LGPL-3.0
+  summary: 'MSC python rpn library'
+
+extra:
+  channels:
+    - fortiers
+    - conda-forge
+    - nodefaults
+  channel_priority: flexible  

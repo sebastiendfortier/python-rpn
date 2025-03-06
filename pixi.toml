@@ -1,0 +1,44 @@
+[project]
+name = "eccc_rpnpy"
+description = "Python library for fstcomp  on command line and in ci"
+authors = ["Sebastien Fortier <sebastien.fortier@ec.gc.ca>"]
+channels = ["fortiers", "conda-forge", "nodefaults"]
+platforms = ["linux-64"]
+
+
+[tasks.conda-build]
+cmd = "rattler-build build --recipe-dir conda.recipe --output-dir /tmp/conda-build --channel conda-forge --channel fortiers"
+
+[tasks.render]
+cmd = "conda-smithy rerender"
+
+[tasks.conda-upload]
+cmd = "anaconda upload /tmp/conda-build/linux-64/eccc_rpnpy-*.conda -u fortiers"
+depends-on = ["conda-build"]
+
+[dependencies]
+python = "==3.10.12"
+pytz = "*"
+numpy = "*"
+scipy = "*"
+setuptools = "*"
+
+
+
+[feature.dev.dependencies]
+anaconda-client = "*"
+setuptools = "==58.5.3"
+wheel = "*"
+hatchling = "*"
+eccc_librmn = ">=20.0.3"
+eccc_libezinterpv = ">=20.0.1"
+eccc_libtdpack = ">=1.6.3"
+eccc_libvgrid = ">=6.9.3"
+eccc_libburpc = ">=1.17"
+
+
+[environments]
+dev = ["dev"]
+
+[target.linux-64.dependencies] 
+
