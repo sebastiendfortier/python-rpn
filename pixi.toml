@@ -13,7 +13,7 @@ cmd = "rattler-build build --recipe-dir conda.recipe --output-dir /tmp/conda-bui
 cmd = "conda-smithy rerender"
 
 [tasks.conda-upload]
-cmd = "anaconda upload /tmp/conda-build/linux-64/eccc_rpnpy-*.conda -u fortiers"
+cmd = "rattler-build upload anaconda -v -o fortiers /tmp/conda-build/linux-64/eccc_rpnpy-*.conda"
 depends-on = ["conda-build"]
 
 [dependencies]
