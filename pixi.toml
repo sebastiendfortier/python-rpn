@@ -7,7 +7,7 @@ platforms = ["linux-64"]
 
 
 [tasks.conda-build]
-cmd = "rattler-build build --recipe-dir conda.recipe --output-dir /tmp/conda-build --channel conda-forge --channel fortiers"
+cmd = "rm -rf /tmp/conda-build && rattler-build build --recipe-dir conda.recipe --output-dir /tmp/conda-build --channel conda-forge --channel fortiers"
 
 [tasks.render]
 cmd = "conda-smithy rerender"

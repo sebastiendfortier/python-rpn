@@ -75,6 +75,7 @@ def loadTDPACKlib(tdpack_version=None):
     import os
     import sys
     import ctypes as ct
+    import logging
     ## import numpy  as np
     ## import numpy.ctypeslib as npct
 
@@ -90,12 +91,12 @@ def loadTDPACKlib(tdpack_version=None):
 
     # Main system or environment (conda for example) library path
     envlibpath  = [os.path.join(sys.prefix, 'lib')]
-    pylibpath   = os.getenv('PYTHONPATH','').split(':')
+    # pylibpath   = os.getenv('PYTHONPATH','').split(':')
     ldlibpath   = os.getenv('LD_LIBRARY_PATH','').split(':')
-    eclibpath   = os.getenv('EC_LD_LIBRARY_PATH','').split()
+    # eclibpath   = os.getenv('EC_LD_LIBRARY_PATH','').split()
     TDPACK_LIBPATH = checkTDPACKlibPath(tdpack_libfile)
     if not TDPACK_LIBPATH:
-        for path in envlibpath + pylibpath + ldlibpath + eclibpath:
+        for path in envlibpath + ldlibpath: # + pylibpath + ldlibpath + eclibpath:
             TDPACK_LIBPATH = checkTDPACKlibPath(os.path.join(path.strip(), tdpack_libfile))
             if TDPACK_LIBPATH:
                 break
@@ -106,6 +107,7 @@ def loadTDPACKlib(tdpack_version=None):
     TDPACK_LIBPATH = os.path.abspath(TDPACK_LIBPATH)
     libtdpack = None
     try:
+        logging.debug('Loading libtdpack.so from: %s', TDPACK_LIBPATH)
         libtdpack = ct.cdll.LoadLibrary(TDPACK_LIBPATH)
         #libtdpack = np.ctypeslib.load_library(tdpack_libfile, TDPACK_LIBPATH)
     except IOError:

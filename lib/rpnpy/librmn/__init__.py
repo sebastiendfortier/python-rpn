@@ -80,7 +80,7 @@ def loadRMNlib(rmn_version=None):
     import os
     import sys
     import ctypes as ct
-
+    import logging
     if rmn_version is None:
         RMN_VERSION = os.getenv('RPNPY_RMN_VERSION',
                                 RMN_VERSION_DEFAULT).strip()
@@ -93,12 +93,12 @@ def loadRMNlib(rmn_version=None):
 
     # Main system or environment (conda for example) library path
     envlibpath  = [os.path.join(sys.prefix, 'lib')]
-    pylibpath   = os.getenv('PYTHONPATH','').split(':')
+    # pylibpath   = os.getenv('PYTHONPATH','').split(':')
     ldlibpath   = os.getenv('LD_LIBRARY_PATH','').split(':')
-    eclibpath   = os.getenv('EC_LD_LIBRARY_PATH','').split()
+    # eclibpath   = os.getenv('EC_LD_LIBRARY_PATH','').split()
     RMN_LIBPATH = checkRMNlibPath(rmn_libfile)
     if not RMN_LIBPATH:
-        for path in envlibpath + pylibpath + ldlibpath + eclibpath:
+        for path in envlibpath + ldlibpath: # + pylibpath + ldlibpath + eclibpath:
             RMN_LIBPATH = checkRMNlibPath(os.path.join(path.strip(), rmn_libfile))
             if RMN_LIBPATH:
                 break
@@ -108,6 +108,7 @@ def loadRMNlib(rmn_version=None):
 
     librmn = None
     try:
+        logging.debug('Loading librmn.so from: %s', RMN_LIBPATH)
         librmn = ct.cdll.LoadLibrary(RMN_LIBPATH)
         #librmn = np.ctypeslib.load_library(rmn_libfile, RMN_LIBPATH)
     except IOError as e:

@@ -76,6 +76,7 @@ def loadVGDlib(vgd_version=None):
     import os
     import sys
     import ctypes as ct
+    import logging
     ## import numpy  as np
     ## import numpy.ctypeslib as npct
 
@@ -91,12 +92,12 @@ def loadVGDlib(vgd_version=None):
     
     # Main system or environment (conda for example) library path
     envlibpath  = [os.path.join(sys.prefix, 'lib')]
-    pylibpath   = os.getenv('PYTHONPATH','').split(':')
+    # pylibpath   = os.getenv('PYTHONPATH','').split(':')
     ldlibpath   = os.getenv('LD_LIBRARY_PATH','').split(':')
-    eclibpath   = os.getenv('EC_LD_LIBRARY_PATH','').split()
+    # eclibpath   = os.getenv('EC_LD_LIBRARY_PATH','').split()
     VGD_LIBPATH = checkVGDlibPath(vgd_libfile)
     if not VGD_LIBPATH:
-        for path in envlibpath + pylibpath + ldlibpath + eclibpath:
+        for path in envlibpath + ldlibpath: # + pylibpath + ldlibpath + eclibpath:
             VGD_LIBPATH = checkVGDlibPath(os.path.join(path.strip(), vgd_libfile))
             if VGD_LIBPATH:
                 break
@@ -107,6 +108,7 @@ def loadVGDlib(vgd_version=None):
     VGD_LIBPATH = os.path.abspath(VGD_LIBPATH)
     libvgd = None
     try:
+        logging.debug('Loading libvgrid.so from: %s', VGD_LIBPATH)
         libvgd = ct.cdll.LoadLibrary(VGD_LIBPATH)
         #libvgd = np.ctypeslib.load_library(vgd_libfile, VGD_LIBPATH)
     except IOError:
