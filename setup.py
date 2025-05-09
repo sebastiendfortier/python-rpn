@@ -2,6 +2,7 @@ from setuptools import setup, find_packages
 import sys
 from glob import glob
 import os
+from shutil import which
 
 # Build version file.
 from subprocess import check_call
@@ -10,7 +11,8 @@ makefile = 'Makefile'
 if os.path.exists(makefile):
     if os.path.exists(versionfile):
         os.remove(versionfile)
-    check_call(['make', '-f', makefile, 'version'], env={'rpnpy':'.'})
+    make = which('make')
+    check_call([make, '-f', makefile, 'version'], env={'rpnpy':'.'})
 
 setup (
     name = 'eccc_rpnpy',
