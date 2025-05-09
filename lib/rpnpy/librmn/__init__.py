@@ -74,8 +74,10 @@ def loadRMNlib(rmn_version=None):
        RMN_LIBPATH (str)  : path to loaded librmn shared lib
        librmn      (CDLL) : ctypes library object for librmn.so
 
-    Library 'librmn.so.VERSION' is searched into the Env.Var. paths:
-       PYTHONPATH, EC_LD_LIBRARY_PATH, LD_LIBRARY_PATH
+    Library 'librmn.so.VERSION' is searched into the following Env.Var. paths (in order):
+      RPNPY_RMN_PATH
+      Python environment path (sys.prefix / lib)
+      LD_LIBRARY_PATH
     """
     import os
     import sys
@@ -91,6 +93,9 @@ def loadRMNlib(rmn_version=None):
     else:
         rmn_libfile = 'librmn.so.' + RMN_VERSION.strip()
 
+    # A path specified through the env by the user
+    RMN_PATH = os.getenv('RPNPY_RMN_PATH')
+    userlibpath = [RMN_PATH] if RMN_PATH else []
     # Main system or environment (conda for example) library path
     envlibpath  = [os.path.join(sys.prefix, 'lib')]
     # pylibpath   = os.getenv('PYTHONPATH','').split(':')
@@ -98,7 +103,7 @@ def loadRMNlib(rmn_version=None):
     # eclibpath   = os.getenv('EC_LD_LIBRARY_PATH','').split()
     RMN_LIBPATH = checkRMNlibPath(rmn_libfile)
     if not RMN_LIBPATH:
-        for path in envlibpath + ldlibpath: # + pylibpath + ldlibpath + eclibpath:
+        for path in userlibpath + envlibpath + ldlibpath: # + pylibpath + ldlibpath + eclibpath:
             RMN_LIBPATH = checkRMNlibPath(os.path.join(path.strip(), rmn_libfile))
             if RMN_LIBPATH:
                 break
